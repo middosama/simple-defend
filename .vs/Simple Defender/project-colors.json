@@ -1,0 +1,26 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "05c2ac54-d17f-69af-3d48-49784efc8cce": {
+      "ProjectGuid": "05c2ac54-d17f-69af-3d48-49784efc8cce",
+      "DisplayName": "Assembly-CSharp",
+      "ColorIndex": 0
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    },
+    "919baf5e-54b9-180b-1306-c72307abeb42": {
+      "ProjectGuid": "919baf5e-54b9-180b-1306-c72307abeb42",
+      "DisplayName": "DOTween.Modules",
+      "ColorIndex": 1
+    },
+    "5cc904ce-7184-5f8f-99c6-986a5acb2a75": {
+      "ProjectGuid": "5cc904ce-7184-5f8f-99c6-986a5acb2a75",
+      "DisplayName": "PathCreator",
+      "ColorIndex": 2
+    }
+  },
+  "NextColorIndex": 3
+}

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adb6740c9bbcd9d4fb68437618747889, type: 3}
+  m_Name: Burst1
+  m_EditorClassIdentifier: 
+  image: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  price: 200
+  nextAbility:
+  - {fileID: 11400000, guid: 83cf2b8e264e5c249b2e9934a30d7281, type: 2}
+  allyAbilityName: 2
