@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using PathCreation;
+using UnityEngine.Events;
 
 public enum Faction
 {
@@ -38,8 +39,10 @@ public abstract class Creature : MonoBehaviour
     protected int hp = 100;
     const string DAMAGED = "DAMAGED";
     const string DEATH = "DEATH";
+    UnityEvent onDead = new UnityEvent();
 
-    const float SAFE_TIME = 1.5f;
+    const float SAFE_TIME = 0;
+    //const float SAFE_TIME = 1.5f;
 
     bool isDead = false;
 
@@ -50,6 +53,7 @@ public abstract class Creature : MonoBehaviour
             if (value)
             {
                 OnDead();
+                onDead.Invoke();
             }
             else
             {
@@ -77,7 +81,7 @@ public abstract class Creature : MonoBehaviour
         {
             //animator.SetTrigger(DAMAGED);
             healthBar.SetPercent(hp / totalHp);
-            DamageBubble.Spawn(transform).Init(damage, damageType);
+            DamageBubble.Spawn(transform).Init(damage, damageType,onDead);
             //fXContainer.
         }
     }

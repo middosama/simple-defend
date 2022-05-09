@@ -13,6 +13,10 @@ public class LevelGUI : MonoBehaviour
     public static LevelGUI Instance;
     [SerializeField]
     float transitionDuration;
+    [SerializeField]
+    CanvasGroup canvasGroup;
+    [SerializeField]
+    CanvasGroup flashCanvas;
 
 
     [SerializeField]
@@ -25,11 +29,16 @@ public class LevelGUI : MonoBehaviour
     [SerializeField]
     Button btnCreateCheckpoint;
     public TMP_Text txtCheckpointCount;
+    public TMP_Text txtCheckpointTicketCount;
+
+
     public TMP_Text txtCheckpointConfirmTitle, txtCheckpointConfirmHealth, txtCheckpointConfirmWave, txtCheckpointConfirmCoin;
     public Image checkpointConfirmScreenshot;
     public Action onConfirm;
     //public Image checkpointConfirmImage;
-    public RectTransform winPanel, confirmWinPopup, checkpointConfirmPopup;
+
+    public PopupEffect winPanel, confirmWinPopup, checkpointConfirmPopup, checkpointPanel;
+    public PopupGroup popupGroup;
 
     public TMP_Text txtDiffReward, txtStarReward;
 
@@ -42,11 +51,13 @@ public class LevelGUI : MonoBehaviour
 
     const int checkpointSlot = 6;
 
-    private void Awake()
+    internal void Init(List<Checkpoint> checkpoints)
     {
+        checkpointList = checkpoints;
         Instance = this;
+        popupGroup.onFirstPopupShow.AddListener(x => Level.Instance.PassivePause());
+        popupGroup.onLastPopupHide.AddListener(x => Level.Instance.PassiveResume());
     }
-
     public void SetCoin(int coin)
     {
         txtCoin.text = coin.ToString();
@@ -59,47 +70,78 @@ public class LevelGUI : MonoBehaviour
     public void CreateCheckpoint()
     {
         // check slot
-        if (Level.Instance.GetCheckpointListCount() >= 9)
+        if (checkpointList.Count >= 9)
         {
             return;
         }
-        if()
+        // check have ticket
+        if (Player.CheckpointTicket > 0)
+            StartCoroutine(IcreateCheckpoint());
     }
 
-    public void ShowWinConfirmPopup(List<Checkpoint> checkpoints)
+    public IEnumerator IcreateCheckpoint()
     {
-        InstantiateCheckPointList(checkpoints, winCheckpointContainer);
-        confirmWinPopup.gameObject.SetActive(true);
+        canvasGroup.alpha = 0.001f;
+        flashCanvas.gameObject.SetActive(true);
+        flashCanvas.alpha = 0;
+        Checkpoint? newCheckpoint;
+        yield return new WaitForEndOfFrame();
+        newCheckpoint = Level.Instance.CreateCheckpoint();
+        var fadeAnim = flashCanvas.DOFade(1, transitionDuration / 3)
+            .SetUpdate(true)
+            .SetAutoKill(false);
+        fadeAnim.OnComplete(() =>
+            {
+                if(newCheckpoint!= null)
+                    InitCheckpoint(checkpointContainer, newCheckpoint.Value, true);
+                RedrawCheckpointListInfo();
+                canvasGroup.alpha = 1;
+                fadeAnim.OnComplete(() =>
+                {
+                    flashCanvas.gameObject.SetActive(false);
+                    fadeAnim.Kill();
+                });
+                fadeAnim.PlayBackwards();
+            });
+
+
+
+
+
+
+    }
+
+    public void ShowWinConfirmPopup()
+    {
+        confirmWinPopup.Show();
+        InstantiateCheckPointList(winCheckpointContainer);
     }
 
     public void ShowWinPanel(int diffPoint, int starPoint)
     {
         txtDiffReward.text = diffPoint.ToString();
         txtStarReward.text = starPoint.ToString();
-        winPanel.gameObject.SetActive(true);
+        winPanel.Show();
     }
 
     public void ShowCheckpointListPopup()
     {
         RedrawCheckpointListInfo();
-        InstantiateCheckPointList()
+        checkpointPanel.Show();
+        InstantiateCheckPointList(checkpointContainer);
+
         //checkPointList.DOPivotY()
     }
-
-    void RedrawCheckpointListInfo()
+    public void CloseCheckpointListPopup()
     {
-        int checkPointCount = Level.Instance.GetCheckpointListCount();
-        txtCheckpointCount.text = checkPointCount + "/"+ checkpointSlot;
-        if(checkPointCount >= checkpointSlot) // fullslot
-        {
-            btnCreateCheckpoint.interactable = false;
-            txtCheckpointCount.color = red;
-        }
-        else
-        {
-            btnCreateCheckpoint.interactable = true;
-            txtCheckpointCount.color = green;
-        }
+        checkpointPanel.Close();
+    }
+
+    public void RedrawCheckpointListInfo()
+    {
+        txtCheckpointCount.text = checkpointList.Count + "/" + checkpointSlot;
+        txtCheckpointCount.color = checkpointList.Count >= checkpointSlot ? red : green;
+        txtCheckpointTicketCount.text = Player.CheckpointTicket.ToString();
     }
 
     public void ShowCheckpointConfirmPopup(Checkpoint checkpoint, string title, Action onConfirm)
@@ -109,33 +151,48 @@ public class LevelGUI : MonoBehaviour
         txtCheckpointConfirmHealth.text = checkpoint.hp.ToString();
         txtCheckpointConfirmWave.text = (checkpoint.waveIndex + 1).ToString();
         this.onConfirm = onConfirm;
-        checkpointConfirmPopup.gameObject.SetActive(true);
+        checkpointConfirmPopup.Show();
     }
 
+    public void CheckpointConfirm()
+    {
+        onConfirm();
+        CheckpointConfirmPopupHide();
+    }
 
+    public void CheckpointConfirmPopupHide()
+    {
+        checkpointConfirmPopup.Close();
+        // add transition later
+    }
 
     public void ConfirmWin()
     {
-        confirmWinPopup.gameObject.SetActive(false);
+        confirmWinPopup.Close();
         Level.Instance.OnWinConfirmed();
 
     }
 
 
 
-    public void InstantiateCheckPointList(List<Checkpoint> checkpoints, HorizontalChaosLayout container)
+    void InstantiateCheckPointList(HorizontalChaosLayout container)
     {
         foreach (Transform child in container.transform)
         {
             Destroy(child.gameObject);
         }
-        checkpoints.ForEach(x =>
+        checkpointList.ForEach(x =>
         {
-            Instantiate(checkpointItemTemplate, container.transform).Init(x);
+            InitCheckpoint(container, x);
         });
         container.seed = UnityEngine.Random.Range(0, 100);
-        container.DoCount(0, 1, transitionDuration, container.SetGlobalScale);
+        container.DoCount(0, 1, transitionDuration, container.SetGlobalScale, true, Ease.OutQuad);
     }
 
-    
+    void InitCheckpoint(HorizontalChaosLayout container, Checkpoint checkpoint, bool isNew = false)
+    {
+        Instantiate(checkpointItemTemplate, container.transform).Init(checkpoint, isNew);
+    }
+
+
 }

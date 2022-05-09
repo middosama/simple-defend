@@ -93,6 +93,7 @@ public class HorizontalChaosLayout : LayoutGroup, ILayoutSelfController
     public void SetGlobalScale(float time)
     {
         globalScale = time;
+        CalculateLayoutInputVertical();
     }
 
     public override void SetLayoutHorizontal()

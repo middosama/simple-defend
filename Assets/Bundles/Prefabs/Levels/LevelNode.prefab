@@ -226,6 +226,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level: {fileID: 2178243965168947347, guid: e7e47a46ecb877841a4c88798b32cd52, type: 3}
   txtStar: {fileID: 4869885128873205566}
+  btn: {fileID: 181232276055704713}
 --- !u!114 &181232276055704713
 MonoBehaviour:
   m_ObjectHideFlags: 0

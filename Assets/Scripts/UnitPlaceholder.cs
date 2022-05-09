@@ -2,8 +2,9 @@
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
-public class UnitPlaceholder : MonoBehaviour
+public class UnitPlaceholder : MonoBehaviour, IPointerClickHandler
 {
     Ally _ally;
     public Ally ally
@@ -44,17 +45,16 @@ public class UnitPlaceholder : MonoBehaviour
 
     public void LoadSnapshot(UnitSnapshot snapshot= null)
     {
+        Clear();
         if (snapshot != null)
         {
+            Clear();
             AssignAlly(Main.allyDescriptions[snapshot.allyName].allyTemplate);
             snapshot.appliedAbility.ForEach(x =>
             {
                 ally.ApplyAbility(x);
             });
-        }
-        else
-        {
-            Clear();
+            investedValue = snapshot.investedValue;
         }
     }
 
@@ -96,7 +96,7 @@ public class UnitPlaceholder : MonoBehaviour
 
     public bool IsAssigned { get => ally != null; }
 
-    private void OnMouseDown()
+    public void OnPointerClick(PointerEventData data)
     {
         ShowOption();
     }
@@ -106,7 +106,7 @@ public class UnitSnapshot
 {
     public AllyName allyName { get; private set; }
     public List<AllyAbility> appliedAbility { get; private set; }
-    int investedValue;
+    public int investedValue;
 
     public UnitSnapshot(Ally ally, int invest)
     {

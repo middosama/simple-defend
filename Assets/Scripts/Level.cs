@@ -19,6 +19,8 @@ public class Level : MonoBehaviour
     private Transform objectPool;
     [SerializeField]
     LevelGUI levelGUI;
+    [SerializeField]
+    Transform worldGUI;
 
     [SerializeField]
     private InstantBullet instantBulletPrefab;
@@ -29,8 +31,8 @@ public class Level : MonoBehaviour
     [SerializeField]
     public OptionMenu optionMenuPrefab;
 
-    
-    
+
+
 
     [SerializeField]
     Wave[] waves;
@@ -39,10 +41,15 @@ public class Level : MonoBehaviour
     UnitPlaceholder[] unitPlaceholders;
 
     // popup
+    [SerializeField]
+    float[] speedList;
+    //[SerializeField]  /something to visualixze 
+    //float[] speedList;
+    int speedIndex = 0;
+    bool pausing = false;
 
-    
     float nextWaveTime;
-   
+
     public UnityEvent OnCoinChange;
 
     public static Level Instance;
@@ -94,7 +101,7 @@ public class Level : MonoBehaviour
     {
         Instance = this;
         Main.ObjectPool = objectPool;
-        Main.CurrentGUI = levelGUI.transform;
+        Main.CurrentGUI = worldGUI.transform;
         InstantBullet.Enqueue(1, instantBulletPrefab);
         DamageBubble.Enqueue(1, instantBubblePrefab);
 
@@ -108,7 +115,9 @@ public class Level : MonoBehaviour
             unitPlaceholders[i] = unitPlaceholdersContainer.GetChild(i).GetComponent<UnitPlaceholder>();
         }
         checkpointList = new List<Checkpoint>();
+        levelGUI.Init(checkpointList);
     }
+
 
     void Init()
     {
@@ -171,7 +180,7 @@ public class Level : MonoBehaviour
         // win, create new record
         if (checkpointList.Count > 0)
         {
-            levelGUI.ShowWinConfirmPopup(checkpointList);
+            levelGUI.ShowWinConfirmPopup();
         }
         else
         {
@@ -210,37 +219,45 @@ public class Level : MonoBehaviour
 
     public void Pause()
     {
-        if (Time.timeScale != 0)
+        if (!pausing)
         {
             Time.timeScale = 0;
         }
         else
         {
-            Time.timeScale = 1;
+            Time.timeScale = speedList[speedIndex];
         }
+        pausing = !pausing;
     }
-
-
+    public void PassivePause()
+    {
+        Time.timeScale = 0;
+    }
+    public void PassiveResume()
+    {
+        if (!pausing)
+            Time.timeScale = speedList[speedIndex];
+    }
 
     public void SpeedUp()
     {
-        if (Time.timeScale != 2)
-        {
-            Time.timeScale = 2;
-        }
-        else
-        {
-            Time.timeScale = 1;
-        }
+        speedIndex++;
+        if (speedIndex >= speedList.Length)
+            speedIndex = 0;
+
+        // visualize 
+
+        if (!pausing)
+            Time.timeScale = speedList[speedIndex];
     }
-    public int GetCheckpointListCount() => checkpointList.Count;
-    public void CreateCheckpoint()
+    public Checkpoint? CreateCheckpoint()
     {
-        // check slot
-        if
+        if(Player.CreateCheckpoint())
+            return SaveCheckpoint();
+        return null;
     }
 
-    void SaveCheckpoint()
+    Checkpoint SaveCheckpoint()
     {
 
         UnitSnapshot[] snapshotList = new UnitSnapshot[unitPlaceholders.Length];
@@ -248,8 +265,9 @@ public class Level : MonoBehaviour
         {
             snapshotList[i] = unitPlaceholders[i].GetSnapshot();
         }
-
-        checkpointList.Add(new Checkpoint(snapshotList, currentWaveIndex, currentCoin, currentHealth, ScreenCapture.CaptureScreenshotAsTexture()));
+        Checkpoint checkpoint = new Checkpoint(snapshotList, currentWaveIndex, currentCoin, currentHealth, ScreenCapture.CaptureScreenshotAsTexture());
+        checkpointList.Add(checkpoint);
+        return checkpoint;
     }
 
     public void LoadCheckpoint(Checkpoint checkpoint)
@@ -264,6 +282,7 @@ public class Level : MonoBehaviour
         {
             unitPlaceholders[i].LoadSnapshot(checkpoint.snapshotList[i]);
         }
+        levelGUI.popupGroup.HideAll();
     }
 
     public void RemoveCheckpoint(Checkpoint checkpoint)
@@ -271,7 +290,7 @@ public class Level : MonoBehaviour
         checkpointList.Remove(checkpoint);
     }
 
-    
+
 
     public void RestartLevel()
     {
@@ -418,7 +437,7 @@ public class Level : MonoBehaviour
             this.waveIndex = waveIndex;
             this.coin = coin;
             this.hp = hp;
-            this.screenshot = Sprite.Create(screenshot, new Rect(0, 0, 1280, 720), Vector2.zero);
+            this.screenshot = Sprite.Create(screenshot, new Rect(0, 0, screenshot.width, screenshot.height), Vector2.zero);
         }
 
         public void DestroyTexture()

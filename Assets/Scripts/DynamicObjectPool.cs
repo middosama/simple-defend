@@ -36,6 +36,9 @@ public abstract class DynamicObjectPool<T> : ObjectPool<T> where T : DynamicObje
     //public abstract void OnInstantiate();
     public void Destroy(T obj)
     {
+        if (obj == null || Main.ObjectPool == null)
+            return;
+
         Pool.Enqueue(obj);
         obj.gameObject.SetActive(false);
         obj.transform.SetParent(Main.ObjectPool, false);

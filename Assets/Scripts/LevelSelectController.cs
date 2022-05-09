@@ -15,11 +15,11 @@ public class LevelSelectController : MonoBehaviour
     [SerializeField]
     Zone[] zones;
     [SerializeField]
-    TMP_Text levelName, levelDes;
+    TMP_Text levelName, levelDes, levelNote, levelBypass;
     [SerializeField]
     Image levelPreview;
     [SerializeField]
-    Button startButton;
+    Button startButton, btnBypass;
 
     public RectTransform rectTransform, zoneContainer, loadingCloud;
     public PopupEffect levelSelectPopup;
@@ -52,8 +52,7 @@ public class LevelSelectController : MonoBehaviour
     {
         if (zoneIndex + 1 < zones.Length)
         {
-            zoneIndex++;
-            LoadZone(zoneIndex);
+            LoadZone(zoneIndex + 1);
         }
     }
 
@@ -61,8 +60,7 @@ public class LevelSelectController : MonoBehaviour
     {
         if (zoneIndex > 0)
         {
-            zoneIndex--;
-            LoadZone(zoneIndex);
+            LoadZone(zoneIndex - 1);
         }
     }
 
@@ -81,29 +79,80 @@ public class LevelSelectController : MonoBehaviour
     void DoZoneTrasition(bool isNext, Action action)
     {
         int direction = isNext ? 1 : -1;
+        Debug.Log(direction);
         currentZone.DoOutTransition(isNext);
-        loadingCloud.DOAnchorPosX(0, duration - 0.1f).OnStart(() =>
+        loadingCloud.anchoredPosition = new Vector2(rectTransform.sizeDelta.x * direction, 0);
+        loadingCloud.DOAnchorPosX(0, duration * 0.75f).OnComplete(() =>
         {
-            loadingCloud.anchoredPosition = new Vector2(rectTransform.sizeDelta.x * direction, 0);
+            action();
+            loadingCloud.DOAnchorPosX(rectTransform.sizeDelta.x * -direction, duration * 1.5f);
+            Debug.Log(rectTransform.sizeDelta.x * -direction);
+            currentZone.DoInTransition(isNext);
+
         });
-        action();
-        loadingCloud.DOAnchorPosX(rectTransform.sizeDelta.x * -direction, duration + 0.1f);
-        currentZone.DoInTransition(isNext);
     }
 
-    public void ShowLevelPopup(int levelIndex, Level level)
+    public bool IsCurrentZoneUnlocked()
+    {
+        return zoneIndex == 0 ? true : zones[zoneIndex - 1].IsComplete();
+    }
+
+    public void ShowLevelPopup(int levelIndex, Level level, bool isUnlocked, List<int> waitBypassList)
     {
         levelPreview.sprite = level.levelPreview;
         levelName.text = zoneIndex + "-" + levelIndex;
-        selectingLevelIndex = levelIndex;
-        GamePlayController.SelectedLevel = level;
-        levelSelectPopup.Show();
-
+        
 
         selectingLevelRecords = DataManager.Load<List<LevelRecord>>(level.name, DataManager.LEVEL_RECORDS_PATH);
         if (selectingLevelRecords == null)
             selectingLevelRecords = new List<LevelRecord>();
         LoadRecordList();
+        startButton.interactable = isUnlocked;
+        btnBypass.gameObject.SetActive(true);
+        if (selectingLevelRecords.Count > 0)
+        {
+            levelNote.text = "";
+            btnBypass.gameObject.SetActive(false);
+        }
+        else
+        {
+            int nextJump = currentZone.GetBypassJump(levelIndex);
+            if (isUnlocked)
+            {
+                levelNote.text = "{lang.needToSolve before}" + (nextJump > 0 ? nextJump + "{lang.next}" : "{lang.nextzone}");
+                if (nextJump == 0)
+                {
+                    levelNote.text = "";
+                    btnBypass.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                string listBypassing = "";
+                if (waitBypassList != null)
+                {
+                    for (int i = 0; i < waitBypassList.Count; i++)
+                    {
+                        if (i == waitBypassList.Count - 1 && waitBypassList.Count > 1)
+                        {
+                            listBypassing = "{and} " + zoneIndex + "-" + waitBypassList[i];
+                        }
+                        else
+                        {
+                            listBypassing += ", " + zoneIndex + "-" + waitBypassList[i];
+                        }
+                    }
+                }
+                levelNote.text = "{lang.needToSolve level}" + listBypassing;
+            }
+        }
+        
+        selectingLevelIndex = levelIndex;
+        GamePlayController.SelectedLevel = level;
+        levelSelectPopup.Show();
+
+
+        
 
         PlayerPrefs.SetInt(LAST_LEVEL_INDEX_KEY, levelIndex);
 
@@ -137,6 +186,12 @@ public class LevelSelectController : MonoBehaviour
     {
         if (GamePlayController.SelectedLevel != null)
             Main.LoadScene("GameplayScene");
+    }
+
+    public void Bypass()
+    {
+        if(Player.Bypass())
+            currentZone.Bypass(selectingLevelIndex);
     }
 }
 

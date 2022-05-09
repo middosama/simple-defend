@@ -7,7 +7,7 @@ namespace UnityCommon
 {
     public static class UnityCommon
     {
-        public static IEnumerator IDoCount(float startNum, float endNum, float time, Action<float> action, Ease easeType, bool isDepentUpdate = false)
+        public static IEnumerator IDoCount(float startNum, float endNum, float time, Action<float> action, Ease easeType, bool isDepentUpdate = true)
         {
             float startTime = GetTime(isDepentUpdate);
             float currentTime = startTime;
@@ -17,7 +17,7 @@ namespace UnityCommon
                 currentTime = GetTime(isDepentUpdate);
                 if(currentTime < endTime)
                 {
-                    action(DOVirtual.EasedValue(startNum, endNum, time / (currentTime - startTime), easeType));
+                    action(DOVirtual.EasedValue(startNum, endNum,  (currentTime - startTime) / time, easeType));
                     yield return null;
                 }
                 else
@@ -29,14 +29,14 @@ namespace UnityCommon
             
         }
 
-        public static void DoCount(this MonoBehaviour ctx, float startNum, float endNum, float time, Action<float> action, bool isDepentUpdate = false, Ease easeType = Ease.InSine)
+        public static void DoCount(this MonoBehaviour ctx, float startNum, float endNum, float time, Action<float> action, bool isDepentUpdate = true, Ease easeType = Ease.OutCirc)
         {
             ctx.StartCoroutine(IDoCount(startNum,endNum,time,action,easeType, isDepentUpdate));
         }
 
         static float GetTime( bool isDepentUpdate)
         {
-            return isDepentUpdate ? Time.fixedTime : Time.fixedUnscaledTime;
+            return isDepentUpdate ? Time.unscaledTime : Time.time;
         }
     }
     public class ThreadBlocker : CustomYieldInstruction

@@ -9,6 +9,8 @@ public class PopupEffect : MonoBehaviour
     RectTransform targetPanel;
     [SerializeField]
     CanvasGroup background;
+    [SerializeField]
+    PopupGroup popupGroup;
     // Use this for initialization
     Action onDone;
 
@@ -18,13 +20,21 @@ public class PopupEffect : MonoBehaviour
     const float scale1 = 1.1f;
     const float duration = 0.3f;
 
+    static Vector2 half = new Vector2(0.5f, 0.5f);
+
+    private void Start()
+    {
+        popupGroup?.Assign(this);
+
+    }
+
     public void Show()
     {
         gameObject.SetActive(true);
         if (sequence == null)
         {
             sequence = DOTween.Sequence();
-            
+
             background.alpha = 0;
             targetPanel.localScale = Vector2.zero;
             sequence
@@ -42,6 +52,7 @@ public class PopupEffect : MonoBehaviour
         {
             sequence.PlayForward();
         }
+        popupGroup?.OnShow(this);
     }
     //public void Show()
     //{
@@ -55,5 +66,6 @@ public class PopupEffect : MonoBehaviour
             onDone = () => { gameObject.SetActive(false); onDone = null; };
             sequence.PlayBackwards();
         }
+        popupGroup?.OnHide(this);
     }
 }

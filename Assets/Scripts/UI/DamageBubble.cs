@@ -2,6 +2,7 @@
 using TMPro;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Events;
 
 public class DamageBubble : DynamicObjectPool<DamageBubble>
 {
@@ -19,6 +20,8 @@ public class DamageBubble : DynamicObjectPool<DamageBubble>
     Transform container;
 
     Sequence scaleAnim;
+    Sequence jumpAnim;
+    UnityEvent onParentDestroy;
 
     private void Awake()
     {
@@ -43,8 +46,10 @@ public class DamageBubble : DynamicObjectPool<DamageBubble>
     }
 
     // Use this for initialization
-    public Sequence Init(int number, DamageType damageType)
+    public Sequence Init(int number, DamageType damageType,UnityEvent onParentDestroy)
     {
+        this.onParentDestroy = onParentDestroy;
+        onParentDestroy.AddListener(OnParentDestroy);
         rectTransform.anchoredPosition = Vector2.zero;
         damageNumber.text = number.ToString();
         gameObject.SetActive(true);
@@ -54,15 +59,25 @@ public class DamageBubble : DynamicObjectPool<DamageBubble>
                 damageNumber.color = physXColor;
                 //scaleAnim.Join();
                 //scaleAnim.Restart();
-                return rectTransform.DOJumpAnchorPos(new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)), 1, 1, showTime)
+
+                // can be reuse. todo
+                jumpAnim = rectTransform.DOJumpAnchorPos(new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)), 1, 1, showTime)
                     .OnComplete(() =>
                     {
                         Destroy(this);
+                        onParentDestroy.RemoveListener(OnParentDestroy);
                     });
+                return jumpAnim;
 
                 //break;
         }
+
         return null;
 
+    }
+
+    void OnParentDestroy()
+    {
+        jumpAnim.Kill();
     }
 }

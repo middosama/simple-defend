@@ -22,7 +22,7 @@ public class Main : MonoBehaviour
     const float duration = 1f;
 
     public static Sequence loadingSequence;
-    public static Action loadingDoneAction;
+    public static Action beginAnimDoneAction;
 
     public static Main Instance;
 
@@ -51,17 +51,18 @@ public class Main : MonoBehaviour
         loadingSequence.Append(loadingCloudL.DOAnchorPosX(mainUICanvas.sizeDelta.x, duration))
             .Join(loadingCloudR.DOAnchorPosX(-mainUICanvas.sizeDelta.x, duration))
             .SetAutoKill(false)
+            .SetUpdate(true)
             .OnStepComplete(() =>
             {
-                if (loadingDoneAction != null)
+                if (beginAnimDoneAction != null)
                 {
-                    loadingDoneAction();
+                    beginAnimDoneAction();
                     //loadingDoneAction = null;
                 }
             })
             .SetDelay(0.05f);
 
-        loadingDoneAction = () =>
+        beginAnimDoneAction = () =>
         {
             LoadScene("LevelSelectScene");
         };
@@ -69,15 +70,16 @@ public class Main : MonoBehaviour
 
     public static void LoadScene(string sceneName, Action<AsyncOperation> onLoadDone = null)
     {
-        loadingDoneAction = () =>
+        beginAnimDoneAction = () =>
         {
+            Time.timeScale = 1;
             var asyncOperator = SceneManager.LoadSceneAsync(sceneName);
             
             if (onLoadDone != null)
             {
                 asyncOperator.completed += onLoadDone;
             }
-            loadingDoneAction = null;
+            beginAnimDoneAction = null;
         };
         loadingSequence.PlayBackwards();
     }
