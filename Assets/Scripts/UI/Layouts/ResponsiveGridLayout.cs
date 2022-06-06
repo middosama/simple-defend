@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class ResponsiveGridLayout : LayoutGroup, ILayoutSelfController
 {
     [SerializeField]
-    float cellRatio;
+    float cellRatio = 1f;
     [SerializeField]
     float hSpacing, vSpacing;
     float hS, vS;
@@ -15,7 +15,6 @@ public class ResponsiveGridLayout : LayoutGroup, ILayoutSelfController
     [SerializeField]
     int columns = 1;
 
-    private DrivenRectTransformTracker m_Tracker;
     public override void CalculateLayoutInputVertical()
     {
         if (columns == 0)

@@ -13,33 +13,29 @@ public abstract class Ally : MonoBehaviour
 
     protected abstract void OnAssign();
 
-    public AllyAbility[] GetAbilities()
-    {
-        return currentAbility.nextAbility;
-    }
+    //public AllyAbility[] GetAbilities()
+    //{
+    //    return currentAbility.nextAbility;
+    //}
 
-    public List<AllyAbility> appliedAbility = new List<AllyAbility>();
+    public List<AllyAbilityName> appliedAbility = new List<AllyAbilityName>();
 
-    public void ApplyAbility(AllyAbility ability)
+    public void ApplyAbility(AllyAbilityName ability)
     {
         appliedAbility.Add(ability);
-        currentAbility = ability;
         OnApplyAbility(ability);
     }
-    public abstract void OnApplyAbility(AllyAbility ability);
+    public abstract void OnApplyAbility(AllyAbilityName ability);
     public abstract float SellValue { get; }
 
     public abstract AllyName AllyName { get; }
 
     UnitPlaceholder unitPlaceholder;
 
-    protected AllyAbility currentAbility;
-
     public void Assign(UnitPlaceholder unitPlaceholder)
     {
         this.unitPlaceholder = unitPlaceholder;
 
-        currentAbility = Main.allyDescriptions[AllyName].firstAbility;
         OnAssign();
     }
 

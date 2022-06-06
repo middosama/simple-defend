@@ -29,12 +29,12 @@ namespace UnityCommon
             
         }
 
-        public static void DoCount(this MonoBehaviour ctx, float startNum, float endNum, float time, Action<float> action, bool isDepentUpdate = true, Ease easeType = Ease.OutCirc)
+        public static Coroutine DoCount(this MonoBehaviour ctx, float startNum, float endNum, float time, Action<float> action, bool isDepentUpdate = true, Ease easeType = Ease.OutCirc)
         {
-            ctx.StartCoroutine(IDoCount(startNum,endNum,time,action,easeType, isDepentUpdate));
+            return ctx.StartCoroutine(IDoCount(startNum,endNum,time,action,easeType, isDepentUpdate));
         }
 
-        static float GetTime( bool isDepentUpdate)
+        public static float GetTime( bool isDepentUpdate)
         {
             return isDepentUpdate ? Time.unscaledTime : Time.time;
         }

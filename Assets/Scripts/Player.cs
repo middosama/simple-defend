@@ -25,7 +25,7 @@ internal class Player
     }
 
 
-    internal AllyDescription[] ChooseAlly()
+    internal AllyDescription[] GetAllyList()
     {
         //todo
         // do something with order

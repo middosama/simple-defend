@@ -2,52 +2,80 @@
 using UnityEngine.EventSystems;
 using UnityEngine;
 using DG.Tweening;
-
+using Collection;
+using UnityEngine.UI;
+using TMPro;
 
 public class OptionMenu : MonoBehaviour
 {
-    [SerializeField]
-    Transform actionContainer;
-    [SerializeField]
-    RectTransform canvas, selfRect;
 
+    [SerializeField]
+    ComfortPopupPosition popupPanel;
+
+    [SerializeField]
+    AbilitiesBoard abilitiesBoard;
+    [SerializeField]
+    Button btnApplyAbility;
+    [SerializeField]
+    TMP_Text txtAbilityPrice, txtSellPrice;
+
+    [SerializeField]
+    UnitsBoard unitsBoard;
+    [SerializeField]
+    GameObject abilityPanel, unitPanel;
+
+
+    AbilityNode activingNode;
     bool isInited = false;
 
-    static UnitPlaceholder unitPlaceholder;
+    static UnitPlaceholder currentTarget;
     static OptionMenu focusingMenu;
+
+    static Vector2? _abilitiesBoardSize;
+    static Vector2? _unitsBoardSize;
+    static Vector2 rectSize
+    {
+        get
+        {
+            if (currentTarget.IsAssigned)
+                return _abilitiesBoardSize ?? new Vector2(Screen.safeArea.height / 1.7f, Screen.safeArea.height / 1.3f);
+            return _unitsBoardSize ?? new Vector2(Screen.safeArea.height / 2, Screen.safeArea.height / 1.5f);
+        }
+    }
+
     const float animDuration = 0.3f;
 
 
-    public Vector2 downSideVector = new Vector2(0,-45);
+    //public Vector2 downSideVector = new Vector2(0,-45);
 
-    static SellOption _sellOption;
-    static SellOption sellOption
-    {
-        get => _sellOption ??= SellOption.CreateInstance<SellOption>();
-    }
+    //static SellOption _sellOption;
+    //static SellOption sellOption
+    //{
+    //    get => _sellOption ??= SellOption.CreateInstance<SellOption>();
+    //}
 
-    public static void Show( UnitPlaceholder u)
+    public static void Show(UnitPlaceholder u)
     {
-        if (unitPlaceholder == u)
+        if (currentTarget == u)
         {
             return;
         }
-        if(focusingMenu!= null)
+        if (focusingMenu != null)
         {
             focusingMenu.OnBlur();
         }
-        unitPlaceholder = u;
-        OptionMenu x = Instantiate(Level.Instance.optionMenuPrefab,Main.CurrentGUI);
+        currentTarget = u;
+        OptionMenu x = Instantiate(Level.Instance.optionMenuPrefab, Main.CurrentGUI);
         focusingMenu = x;
-        //x.transform.SetParent(unitPlaceholder.transform, false);
 
         x.Init();
         //todo
     }
 
-    private void Update()
+    private void LateUpdate()
     {
-        if (isInited && Input.GetMouseButtonDown(0) && !IsPointerOver())
+
+        if (isInited && Input.GetMouseButtonDown(0) && !IsPointerOver() && currentTarget.eventTarget.phase == TouchPhase.Ended)
         {
             OnBlur();
         }
@@ -55,66 +83,88 @@ public class OptionMenu : MonoBehaviour
 
     bool IsPointerOver()
     {
-        return EventSystem.current.IsPointerOverGameObject();
+        return RectTransformUtility.RectangleContainsScreenPoint(popupPanel.selfRect, Input.mousePosition, Camera.main);
+        //return EventS ystem.current.IsPointerOverGameObject();
     }
-
-    //public static void Show(Ally ally, UnitPlaceholder unitPlaceholder)
-    //{
-    //    //todo
-    //}
 
 
     void Init()
     {
-        selfRect.anchoredPosition = Camera.main.WorldToScreenPoint(unitPlaceholder.transform.position);
-        foreach (Transform child in actionContainer.transform)
-        {
-            Destroy(child.gameObject);
-        }
+        // set position 
+        var position = Camera.main.WorldToScreenPoint(currentTarget.transform.position, Camera.MonoOrStereoscopicEye.Mono);
+        popupPanel.selfRect.anchoredPosition = position;
+        popupPanel.selfRect.sizeDelta = rectSize;
+        popupPanel.FormatPosition();
+        popupPanel.selfRect.localScale = Vector3.zero;
+        popupPanel.selfRect.DOScale(Vector2.one, animDuration).SetUpdate(true);
 
-        if (unitPlaceholder.IsAssigned)
-        {
-            sellOption.SetPrice = unitPlaceholder;
-            Instantiate(Level.Instance.optionItemPrefab, actionContainer.transform).Init(downSideVector, sellOption, (x) =>
-            {
-                unitPlaceholder.Sell();
-                OnBlur();
-            });
-            var options = unitPlaceholder.ally.GetAbilities();
-            float singleAngle = 360 / (options.Length + 1);
-            for (int i = 0; i < options.Length; i++)
-            {
-                Vector2 pos = Quaternion.AngleAxis(singleAngle * (i+1), Vector3.back) * downSideVector;
-                Instantiate(Level.Instance.optionItemPrefab, actionContainer.transform).Init(pos, options[i],(x) =>
-                {
-                    unitPlaceholder.ApplyAbility(x);
-                    OnBlur();
-                });
-            }
 
-            unitPlaceholder.ally.OnFocus();
+        abilityPanel.SetActive(currentTarget.IsAssigned);
+        unitPanel.SetActive(!currentTarget.IsAssigned);
+
+        if (currentTarget.IsAssigned)
+        {
+            abilitiesBoard.onNodeFocus = OnAbilityFocus;
+            abilitiesBoard.LoadAlly(currentTarget.ally);
+            txtSellPrice.text = "$ +" + currentTarget.SellPrice.ToString();
         }
         else
         {
-            var options = Player.Instance.ChooseAlly();
-            for (int i = 0; i < options.Length; i++)
-            {
-                Vector2 pos = Quaternion.AngleAxis(360 / options.Length * i, Vector3.back) * downSideVector;
-                Instantiate(Level.Instance.optionItemPrefab, actionContainer.transform).Init(pos, options[i],(x) =>
-                {
-                    unitPlaceholder.BuyAlly(x);
-                    OnBlur();
-                });
-            }
+            unitsBoard.onUnitLoad = OnSelectUnit;
+
         }
-        //unitPlaceholder
-        // check 
-        
-        canvas.localScale = Vector2.zero;
-        canvas.DOScale(Vector2.one, animDuration).OnComplete(() =>
+
+        isInited = true;
+        Level.Instance.OnCoinChange.AddListener(ReCheckPrice);
+
+    }
+
+    void OnAbilityFocus(AbilityNode abilityNode)
+    {
+        //abilitiesBoard
+
+        btnApplyAbility.gameObject.SetActive(!abilityNode.isLocking);
+        activingNode = abilityNode;
+        SetAbilityPrice();
+    }
+
+    void ReCheckPrice()
+    {
+
+        if (currentTarget.IsAssigned)
         {
-            isInited = true;
-        }).SetUpdate(true);
+            SetAbilityPrice();
+            txtSellPrice.text = "$ +" + currentTarget.SellPrice;
+        }
+    }
+
+    void SetAbilityPrice()
+    {
+        if (activingNode == null || activingNode.isLocking)
+            return;
+        int price = activingNode.allyAbility.Price;
+
+        txtAbilityPrice.text = price.ToString();
+        btnApplyAbility.interactable = Level.Instance.IsEnoughCoin(price);
+        txtAbilityPrice.color = btnApplyAbility.interactable ? Color.black : Color.red;
+    }
+
+    void OnSelectUnit(AllyDescription allyDescription)
+    {
+        currentTarget.BuyAlly(allyDescription);
+    }
+
+    public void OnApplyAbility()
+    {
+        currentTarget.ApplyAbility(activingNode.allyAbility);
+        abilitiesBoard.ReloadStatus();
+        OnAbilityFocus(activingNode);
+    }
+
+    public void SellUnit()
+    {
+        currentTarget.Sell();
+        OnBlur();
     }
 
     public void OnBlur()
@@ -123,15 +173,16 @@ public class OptionMenu : MonoBehaviour
         {
             return;
         }
-        if (unitPlaceholder.IsAssigned)
-            unitPlaceholder.ally.OnBlur();
-        
+        Level.Instance.OnCoinChange.RemoveListener(ReCheckPrice);
+        if (currentTarget.IsAssigned)
+            currentTarget.ally.OnBlur();
+
         isInited = false;
-        canvas.DOScale(Vector2.zero, animDuration).OnComplete(() =>
+        popupPanel.selfRect.DOScale(Vector2.zero, animDuration).OnComplete(() =>
         {
             Destroy(gameObject);
         }).SetUpdate(true);
-        unitPlaceholder = null;
+        currentTarget = null;
     }
 
     public static void BlurAll()
@@ -143,7 +194,7 @@ public class OptionMenu : MonoBehaviour
 
 public abstract class Option : ScriptableObject
 {
-    public Sprite image;
+    public Sprite thumbnail;
     [SerializeField]
     protected int price;
     public int Price { get => price; }
@@ -158,6 +209,6 @@ public class SellOption : Option
 {
     public UnitPlaceholder SetPrice { set => price = value.SellPrice; }
 
-    public override string description => Language.AllyAbilities[AllyAbilityName.Sell];
+    public override string description => Language.AllyAbilitiesDescription[AllyAbilityName.Sell];
 
 }

@@ -29,7 +29,7 @@ public class SimpleAlly : Ally
 
     
 
-    public override float SellValue => -0.8f; // 80% refund
+    public override float SellValue => 0.8f; // 80% refund
 
     public override AllyName AllyName => AllyName.Simple;
 
@@ -144,9 +144,9 @@ public class SimpleAlly : Ally
 
     
 
-    public override void OnApplyAbility(AllyAbility ability)
+    public override void OnApplyAbility(AllyAbilityName ability)
     {
-        switch (ability.allyAbilityName)
+        switch (ability)
         {
             case AllyAbilityName.Burst1:
                 burstCharge = 5;

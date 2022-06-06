@@ -99,16 +99,22 @@ public class LevelSelectController : MonoBehaviour
 
     public void ShowLevelPopup(int levelIndex, Level level, bool isUnlocked, List<int> waitBypassList)
     {
+        selectingLevelIndex = levelIndex;
+        GamePlayController.SelectedLevel = level;
+
         levelPreview.sprite = level.levelPreview;
         levelName.text = zoneIndex + "-" + levelIndex;
-        
+
 
         selectingLevelRecords = DataManager.Load<List<LevelRecord>>(level.name, DataManager.LEVEL_RECORDS_PATH);
         if (selectingLevelRecords == null)
             selectingLevelRecords = new List<LevelRecord>();
+
         LoadRecordList();
         startButton.interactable = isUnlocked;
+
         btnBypass.gameObject.SetActive(true);
+
         if (selectingLevelRecords.Count > 0)
         {
             levelNote.text = "";
@@ -116,48 +122,54 @@ public class LevelSelectController : MonoBehaviour
         }
         else
         {
-            int nextJump = currentZone.GetBypassJump(levelIndex);
-            if (isUnlocked)
-            {
-                levelNote.text = "{lang.needToSolve before}" + (nextJump > 0 ? nextJump + "{lang.next}" : "{lang.nextzone}");
-                if (nextJump == 0)
-                {
-                    levelNote.text = "";
-                    btnBypass.gameObject.SetActive(false);
-                }
-            }
-            else
-            {
-                string listBypassing = "";
-                if (waitBypassList != null)
-                {
-                    for (int i = 0; i < waitBypassList.Count; i++)
-                    {
-                        if (i == waitBypassList.Count - 1 && waitBypassList.Count > 1)
-                        {
-                            listBypassing = "{and} " + zoneIndex + "-" + waitBypassList[i];
-                        }
-                        else
-                        {
-                            listBypassing += ", " + zoneIndex + "-" + waitBypassList[i];
-                        }
-                    }
-                }
-                levelNote.text = "{lang.needToSolve level}" + listBypassing;
-            }
+            GenLevelNote(levelIndex, isUnlocked, waitBypassList);
         }
-        
-        selectingLevelIndex = levelIndex;
-        GamePlayController.SelectedLevel = level;
+
         levelSelectPopup.Show();
 
 
-        
-
-        PlayerPrefs.SetInt(LAST_LEVEL_INDEX_KEY, levelIndex);
-
+        //PlayerPrefs.SetInt(LAST_LEVEL_INDEX_KEY, levelIndex);
         // enable on have language
         //levelDes.text = Language.LevelDescription[zoneIndex][levelIndex];
+    }
+
+    void GenLevelNote(int levelIndex, bool isUnlocked, List<int> waitBypassList)
+    {
+        int nextJump = currentZone.GetBypassJump(levelIndex);
+        if (isUnlocked)
+        {
+            levelNote.text = "{lang.needToSolve before}" + (nextJump > 0 ? nextJump + "{lang.next}" : "{lang.nextzone}");
+            if (nextJump == 0)
+            {
+                levelNote.text = "";
+                btnBypass.gameObject.SetActive(false);
+            }
+            return;
+        }
+
+        string listBypassing = "";
+        if (waitBypassList == null) return;
+        //if (waitBypassList != null)
+        //{
+        for (int i = 0; i < waitBypassList.Count; i++)
+        {
+            if (i == waitBypassList.Count - 1 && waitBypassList.Count > 1)
+            {
+                listBypassing += GetLevelName(waitBypassList[i]);
+            }
+            else
+            {
+                listBypassing += GetLevelName(waitBypassList[i])+ ", ";
+            }
+        }
+        //}
+        levelNote.text = Language.Other["needToSolveBeforeNextZone"] + listBypassing;
+
+    }
+
+    string GetLevelName(int levelIndex)
+    {
+        return zoneIndex + "-" + levelIndex;
     }
 
     /// <returns>Total diff</returns>
@@ -190,7 +202,7 @@ public class LevelSelectController : MonoBehaviour
 
     public void Bypass()
     {
-        if(Player.Bypass())
+        if (Player.Bypass())
             currentZone.Bypass(selectingLevelIndex);
     }
 }

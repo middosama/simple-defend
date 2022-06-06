@@ -59,25 +59,34 @@
     <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\Language.cs" />
     <Compile Include="Assets\Scripts\UI\WaveTimer.cs" />
+    <Compile Include="Assets\Scripts\UI\Collection\UnitSelectItem.cs" />
     <Compile Include="Assets\Scripts\UnitPlaceholder.cs" />
+    <Compile Include="Assets\Scripts\UI\Collection\AbilitiesBoardContent.cs" />
     <Compile Include="Assets\Libs\PathCreator\Examples\Scripts\GeneratePathExample.cs" />
     <Compile Include="Assets\Scripts\LevelSelectController.cs" />
+    <Compile Include="Assets\Scripts\UI\Collection\UnitItem.cs" />
     <Compile Include="Assets\Scripts\UI\ScrollerItems\CheckpointItem.cs" />
     <Compile Include="Assets\Scripts\Enemy.cs" />
     <Compile Include="Assets\Scripts\UI\LevelGUI.cs" />
     <Compile Include="Assets\Libs\EnhancedScroller v2\Plugins\EnhancedScroller.cs" />
     <Compile Include="Assets\Scripts\SystemCommon.cs" />
     <Compile Include="Assets\Scripts\ObjectPool.cs" />
+    <Compile Include="Assets\Scripts\UI\Collection\UnitsBoard.cs" />
     <Compile Include="Assets\Scripts\UI\ScrollerItems\AllyWithNumberCountItem.cs" />
     <Compile Include="Assets\Scripts\DTOs\LevelUserData.cs" />
     <Compile Include="Assets\Scripts\UI\DraggableRect.cs" />
     <Compile Include="Assets\Scripts\Behaviours\IFocusable.cs" />
+    <Compile Include="Assets\Scripts\UI\Collection\AbilityPath.cs" />
     <Compile Include="Assets\Libs\PathCreator\Examples\Scripts\PathPlacer.cs" />
     <Compile Include="Assets\Scripts\UnityCommon.cs" />
+    <Compile Include="Assets\Scripts\UI\Collection\AbilityNode.cs" />
     <Compile Include="Assets\Scripts\Behaviours\Abilities\AllyAbility.cs" />
     <Compile Include="Assets\Libs\EnhancedScroller v2\Plugins\EnhancedScrollerCellView.cs" />
+    <Compile Include="Assets\Scripts\DTOs\UnitGlobalConfig.cs" />
     <Compile Include="Assets\Scripts\UI\OptionMenu.cs" />
     <Compile Include="Assets\Scripts\Allies\SimpleAlly.cs" />
+    <Compile Include="Assets\Scripts\UI\GraphicLib\UILineRenderer.cs" />
+    <Compile Include="Assets\Scripts\UI\PlayerInfoDisplayController.cs" />
     <Compile Include="Assets\Scripts\DataManager.cs" />
     <Compile Include="Assets\Scripts\Main.cs" />
     <Compile Include="Assets\Scripts\UI\Layouts\ResponsiveGridLayout.cs" />
@@ -85,6 +94,7 @@
     <Compile Include="Assets\Scripts\Ally.cs" />
     <Compile Include="Assets\Scripts\UI\PopupEffect.cs" />
     <Compile Include="Assets\Scripts\UI\Layouts\ResponsiveHorizontalLayout.cs" />
+    <Compile Include="Assets\Scripts\UI\ComfortPopupPosition.cs" />
     <Compile Include="Assets\Scripts\UI\ScrollerItems\LevelRecordItem.cs" />
     <Compile Include="Assets\Scripts\Behaviours\Abilities\AllyDescription.cs" />
     <Compile Include="Assets\Scripts\UI\ScrollerItems\LevelRecordList.cs" />
@@ -98,7 +108,10 @@
     <Compile Include="Assets\Scripts\UI\UIDrawer.cs" />
     <Compile Include="Assets\Scripts\Behaviours\Abilities\AllyAbilityNames.cs" />
     <Compile Include="Assets\Libs\PathCreator\Examples\Scripts\PathFollower.cs" />
+    <Compile Include="Assets\Scripts\UI\Collection\AbilitiesBoard.cs" />
+    <Compile Include="Assets\Scripts\UI\Collection\CollectionSceneController.cs" />
     <Compile Include="Assets\Scripts\Enemies\SimpleEnemy.cs" />
+    <Compile Include="Assets\Scripts\WorldClickEvent.cs" />
     <Compile Include="Assets\Scripts\Level.cs" />
     <Compile Include="Assets\Scripts\Creature.cs" />
     <Compile Include="Assets\Scripts\UI\PopupGroup.cs" />
@@ -109,7 +122,8 @@
     <Compile Include="Assets\Scripts\UI\LevelNode.cs" />
     <Compile Include="Assets\Libs\PathCreator\Examples\Scripts\RoadMeshCreator.cs" />
     <Compile Include="Assets\Scripts\UI\DamageBubble.cs" />
-    <Compile Include="Assets\Scripts\UI\PlayerInfoDisplayController.cs" />
+    <Compile Include="Assets\Scripts\UI\HoldButton.cs" />
+    <Compile Include="Assets\Scripts\Systems\ZoomableCam.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Libs\EnhancedScroller v2\upgrading from 1.x to 2.x.txt" />

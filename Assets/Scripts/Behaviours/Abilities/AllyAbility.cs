@@ -10,6 +10,6 @@ public class AllyAbility : Option
     public AllyAbility[] nextAbility;
     [SerializeField]
     public AllyAbilityName allyAbilityName;
-
-    public override string description => Language.AllyAbilities[allyAbilityName];
+    public int maxStack = 1;
+    public override string description => Language.AllyAbilitiesDescription[allyAbilityName];
 }

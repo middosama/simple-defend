@@ -26,12 +26,16 @@ public class Main : MonoBehaviour
 
     public static Main Instance;
 
-    private void Start()
+    private void Awake()
     {
         
         Instance = this;
         DontDestroyOnLoad(this);
         Player.Instance = new Player() { UnitChooseOrder = { } };
+        Language.Init();
+
+        return;
+
         allyDescriptions.Clear();
         foreach (var allyDescription in allyDescriptionList)
         {

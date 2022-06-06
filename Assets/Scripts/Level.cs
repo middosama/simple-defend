@@ -375,7 +375,7 @@ public class Level : MonoBehaviour
     {
         if (stopCurrent)
         {
-            OptionMenu.BlurAll();
+            //OptionMenu.BlurAll();
             levelGUI.waveTimer.Appear();
             StopRaid();
         }

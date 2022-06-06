@@ -4,8 +4,9 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
-public class UnitPlaceholder : MonoBehaviour, IPointerClickHandler
+public class UnitPlaceholder : MonoBehaviour
 {
+    public WorldClickEvent eventTarget;
     Ally _ally;
     public Ally ally
     {
@@ -32,15 +33,19 @@ public class UnitPlaceholder : MonoBehaviour, IPointerClickHandler
 
     public void BuyAlly(AllyDescription allyDescription)
     {
+        if (IsAssigned)
+            return;
         investedValue += allyDescription.Price;
         Level.Instance.CoinChange(allyDescription.Price);
-        AssignAlly(allyDescription.allyTemplate);
+        AssignAlly(allyDescription);
     }
 
-    public void AssignAlly(Ally allyTemplate)
+    public void AssignAlly(AllyDescription allyDescription)
     {
-        ally = Instantiate(allyTemplate, transform);
+        ally = Instantiate(allyDescription.allyTemplate, transform);
+        eventTarget.targetGraphic.enabled = false;
         ally.Assign(this);
+        ally.ApplyAbility(allyDescription.firstAbility.allyAbilityName);
     }
 
     public void LoadSnapshot(UnitSnapshot snapshot= null)
@@ -49,7 +54,7 @@ public class UnitPlaceholder : MonoBehaviour, IPointerClickHandler
         if (snapshot != null)
         {
             Clear();
-            AssignAlly(Main.allyDescriptions[snapshot.allyName].allyTemplate);
+            AssignAlly(Main.allyDescriptions[snapshot.allyName]);
             snapshot.appliedAbility.ForEach(x =>
             {
                 ally.ApplyAbility(x);
@@ -72,7 +77,7 @@ public class UnitPlaceholder : MonoBehaviour, IPointerClickHandler
 
     public void Sell()
     {
-        Level.Instance.CoinChange(SellPrice);
+        Level.Instance.CoinChange(-SellPrice);
         Clear();
     }
 
@@ -82,6 +87,7 @@ public class UnitPlaceholder : MonoBehaviour, IPointerClickHandler
         if (ally != null)
         {
             Destroy(ally.gameObject);
+            eventTarget.targetGraphic.enabled = true;
             ally = null;
         }
     }
@@ -90,13 +96,13 @@ public class UnitPlaceholder : MonoBehaviour, IPointerClickHandler
     {
         investedValue += ability.Price;
         Level.Instance.CoinChange(ability.Price);
-        ally.ApplyAbility(ability);
+        ally.ApplyAbility(ability.allyAbilityName);
     }
 
 
     public bool IsAssigned { get => ally != null; }
 
-    public void OnPointerClick(PointerEventData data)
+    public void OnClick()
     {
         ShowOption();
     }
@@ -105,13 +111,13 @@ public class UnitPlaceholder : MonoBehaviour, IPointerClickHandler
 public class UnitSnapshot
 {
     public AllyName allyName { get; private set; }
-    public List<AllyAbility> appliedAbility { get; private set; }
+    public List<AllyAbilityName> appliedAbility { get; private set; }
     public int investedValue;
 
     public UnitSnapshot(Ally ally, int invest)
     {
         investedValue = invest;
         allyName = ally.AllyName;
-        appliedAbility = new List<AllyAbility>(ally.appliedAbility);
+        appliedAbility = new List<AllyAbilityName>(ally.appliedAbility);
     }
 }

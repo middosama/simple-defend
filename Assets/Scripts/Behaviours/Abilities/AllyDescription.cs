@@ -8,7 +8,6 @@ public class AllyDescription : Option
 {
     [SerializeField]
     Ally _allyTemplate;
-    public Sprite allyThumbnail;
     public Ally allyTemplate { get=> _allyTemplate; }
     [SerializeField]
     public AllyName allyName;

@@ -25,8 +25,8 @@ public class OptionItem : MonoBehaviour
             action(option);
         };
         this.option = option;
-        if(option.image != null)
-            optionIcon.sprite = option.image;
+        if(option.thumbnail != null)
+            optionIcon.sprite = option.thumbnail;
         SetPrice();
         Level.Instance.OnCoinChange.AddListener(SetPrice);
     }

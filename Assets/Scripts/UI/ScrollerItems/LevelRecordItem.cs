@@ -36,7 +36,7 @@ public class LevelRecordItem : EnhancedScrollerCellView
         for (int i = 0; i < imageList.Count; i++)
         {
             var ally = levelRecord.allies[i];
-            imageList[i].Init(Main.allyDescriptions[ally.allyName].allyThumbnail, ally.count);
+            imageList[i].Init(Main.allyDescriptions[ally.allyName].thumbnail, ally.count);
         }
 
         star.text = levelRecord.star.ToString();
