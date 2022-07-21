@@ -9,8 +9,13 @@ public class UnitsBoard : MonoBehaviour
     public Transform unitPoolContainer;
     public static UnitsBoard Instance;
     public Action<AllyDescription> onUnitLoad;
-
     public UnitItem unitItemTemplate;
+    UnitItem selectingUnitItem;
+
+    public AllyDescription selectingUnit
+    {
+        get => selectingUnitItem?.ally;
+    }
     private void Start()
     {
         Instance = this;
@@ -22,9 +27,18 @@ public class UnitsBoard : MonoBehaviour
 
     }
 
-    public void LoadUnit(AllyDescription allyDescription)
+    public void ClearState()
     {
-        onUnitLoad?.Invoke(allyDescription);
+        selectingUnitItem?.SetStatus(false);
+        selectingUnitItem = null;
     }
-    
+
+    public void LoadUnit(UnitItem unitItem)
+    {
+        selectingUnitItem?.SetStatus(false);
+        selectingUnitItem = unitItem;
+        selectingUnitItem.SetStatus(true);
+        onUnitLoad?.Invoke(unitItem.ally);
+    }
+
 }

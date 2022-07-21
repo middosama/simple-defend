@@ -34,7 +34,7 @@ public class Main : MonoBehaviour
         Player.Instance = new Player() { UnitChooseOrder = { } };
         Language.Init();
 
-        return;
+        //return;
 
         allyDescriptions.Clear();
         foreach (var allyDescription in allyDescriptionList)
@@ -91,7 +91,7 @@ public class Main : MonoBehaviour
     public static void EndLoading()
     {
         loadingSequence.PlayForward();
-        //Instance.UICanvas.worldCamera = Camera.main;
+        Instance.UICanvas.worldCamera = Camera.main;
     }
 
 

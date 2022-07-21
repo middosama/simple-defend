@@ -11,39 +11,76 @@ public class ZoomableCam : MonoBehaviour
     [SerializeField]
     float minSize = 2, maxSize = 6;
     [SerializeField]
-    float questioningRatio = 1.65f; // wut is this :)) ?
+    float minX, maxX, minY, maxY;
+
+    [HideInInspector]
+    public float ratio;
+    [HideInInspector]
+    public Camera camera;
+    public float currentSize;
 
 
     public static ZoomableCam Instance;
     float yOffset;
-    Camera camera;
+
+
+    Tweener zooming;
+
+    public Vector2 position
+    {
+        get => new Vector2(camera.transform.position.x, camera.transform.position.y - yOffset);
+    }
     
     private void Awake()
     {
         camera = GetComponent<Camera>();
         yOffset = camera.transform.position.y;
         Instance = this;
-        
+        ratio = (float)Screen.width / Screen.height;
+        currentSize = camera.orthographicSize;
     }
     private void Update()
     {
-        Debug.Log(camera.ScreenToWorldPoint(Vector3.zero,Camera.MonoOrStereoscopicEye.Mono));
+        if (Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            Focus(Vector2.zero,-0.5f);
+        }
+        if (Input.GetKeyDown(KeyCode.RightControl))
+        {
+            Focus(Vector2.zero, -0.5f,6);
+        }
     }
 
-    public void SmoothZoom(float size)
+    public void ClampedSmoothZoom(float size)
     {
-        camera.DOOrthoSize(Mathf.Clamp(size,minSize,maxSize), smoothness);
+        size = Mathf.Clamp(size, minSize, maxSize);
+        
+        
+        if(size!= currentSize)
+        {
+            SmoothZoom(size);
+        }
     }
 
-    public void MoveTo(Vector2 destination)
+    void SmoothZoom(float size)
     {
-        camera.transform.DOLocalMove(new Vector2(destination.x, destination.y + yOffset), smoothness);
+        zooming.Kill();
+        currentSize = size;
+        zooming = camera.DOOrthoSize(currentSize, smoothness);
     }
 
-    public void Focus(Vector2 destination, Vector2 anchorPos)
+    public void MoveTo(Vector2 destination, float smoothness)
     {
-        anchorPos *= questioningRatio * minSize;
-        SmoothZoom(minSize);
-        MoveTo(destination + anchorPos);
+        camera.transform.DOLocalMove(new Vector3(Mathf.Clamp(destination.x,minX,maxX), Mathf.Clamp(destination.y,minY,maxY) + yOffset,camera.transform.position.z), smoothness);
     }
+
+    public void Focus(Vector2 destination,float xOffset, float size = 0)
+    {
+        size = Mathf.Clamp(size, minSize, maxSize);
+        destination.x += size * ratio * xOffset;
+        MoveTo(destination,smoothness);
+        SmoothZoom(size);
+
+    }
+    
 }

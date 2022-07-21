@@ -15,4 +15,6 @@ public class AllyDescription : Option
     AllyAbility _firstAbility;
     public AllyAbility firstAbility { get=> _firstAbility; }
     public override string description => Language.AllyDescription[allyName];
+
+    public string displayName { get => Language.AllyNames[allyName]; }
 }

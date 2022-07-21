@@ -17,6 +17,7 @@ public class LevelGUI : MonoBehaviour
     CanvasGroup canvasGroup;
     [SerializeField]
     CanvasGroup flashCanvas;
+    public Canvas canvas;
 
 
     [SerializeField]

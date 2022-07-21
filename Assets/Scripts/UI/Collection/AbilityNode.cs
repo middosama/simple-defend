@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
+using UnityCommon;
 
 namespace Collection
 {
@@ -19,7 +21,12 @@ namespace Collection
         TMP_Text txtStack;
         [SerializeField]
         Image icoLock;
+        public Image border;
+        //public Sprite focusSprite, nextSprite, canbeSprite;
+        public Color focusColor, nextColor, canbeColor;
+        public float blinkAlpha = 0.3f;
 
+        Tweener blinkFX;
         int stack = 0;
         public bool isLocking
         {
@@ -54,6 +61,7 @@ namespace Collection
             SetUnlock(false);
             SetNodeStatusStandalone(NodeStatus.Cannot);
             stack = 0;
+            txtStack.text = "0/"+allyAbility.maxStack;
         }
 
         public void SetNodeStatus(NodeStatus status)
@@ -73,19 +81,31 @@ namespace Collection
         {
             // visualize
             currentStatus = status;
+            blinkFX.Kill();
+            border.gameObject.SetActive(true);
             switch (status)
             {
                 case NodeStatus.Focusing:
-                    button.targetGraphic.color = Color.red;
+                    //border.sprite = focusSprite;
+                    border.color = focusColor;
+                    DoBlink();
+                    //button.targetGraphic.color = Color.red;
                     break;
                 case NodeStatus.Next:
-                    button.targetGraphic.color = Color.blue;
+                    //button.targetGraphic.color = Color.blue;
+                    //border.sprite = nextSprite;
+                    border.color = nextColor;
+                    DoBlink();
                     break;
                 case NodeStatus.Canbe:
-                    button.targetGraphic.color = Color.white;
+                    //button.targetGraphic.color = Color.white;
+                    //border.sprite = canbeSprite;
+                    border.color = canbeColor;
+                    //DoBlink();
                     break;
                 case NodeStatus.Cannot:
-                    button.targetGraphic.color = Color.black;
+                    border.gameObject.SetActive(false);
+                    //button.targetGraphic.color = Color.black;
                     break;
 
             }
@@ -100,6 +120,16 @@ namespace Collection
         public void Toggle()
         {
             abilitiesBoardContent.Focus(this);
+        }
+
+        void DoBlink()
+        {
+            blinkFX = border?.DoBlink(blinkAlpha);
+        }
+
+        private void OnDestroy()
+        {
+            blinkFX.Kill();
         }
     }
 

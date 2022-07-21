@@ -133,7 +133,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -189,8 +189,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5876dfc4392d5d43a80714a0e726c82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actionContainer: {fileID: 6564997872465495458}
-  canvas: {fileID: 6564997872465495458}
+  selfTransform: {fileID: 0}
+  abilitiesBoard: {fileID: 0}
+  btnApplyAbility: {fileID: 0}
+  txtAbilityPrice: {fileID: 0}
+  txtSellPrice: {fileID: 0}
+  unitsBoard: {fileID: 0}
+  abilityPanel: {fileID: 0}
+  unitPanel: {fileID: 0}
 --- !u!1001 &4091080805605130195
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -25,6 +25,8 @@ public abstract class Enemy : Creature
         if (moving)
             Move();
     }
+    
+
     // Use this for initialization
 
 }

@@ -18,6 +18,7 @@ public class UnitPlaceholder : MonoBehaviour
     }
 
     int investedValue;
+    Ally reviewingAlly = null;
 
     public int SellPrice
     {
@@ -31,8 +32,22 @@ public class UnitPlaceholder : MonoBehaviour
         OptionMenu.Show(this);
     }
 
+    public void Review(Ally ally)
+    {
+        eventTarget.targetGraphic.enabled = false;
+        reviewingAlly = Instantiate(ally, transform);
+    }
+
+    public void StopReview()
+    {
+        eventTarget.targetGraphic.enabled = !IsAssigned;
+        if(reviewingAlly != null)
+            Destroy(reviewingAlly.gameObject);
+    }
+
     public void BuyAlly(AllyDescription allyDescription)
     {
+        StopReview();
         if (IsAssigned)
             return;
         investedValue += allyDescription.Price;
@@ -40,7 +55,7 @@ public class UnitPlaceholder : MonoBehaviour
         AssignAlly(allyDescription);
     }
 
-    public void AssignAlly(AllyDescription allyDescription)
+    void AssignAlly(AllyDescription allyDescription)
     {
         ally = Instantiate(allyDescription.allyTemplate, transform);
         eventTarget.targetGraphic.enabled = false;
@@ -105,6 +120,16 @@ public class UnitPlaceholder : MonoBehaviour
     public void OnClick()
     {
         ShowOption();
+    }
+
+    public void OnFocus()
+    {
+        ally?.OnFocus();
+    }
+    public void OnBlur()
+    {
+        ally?.OnBlur();
+        StopReview();
     }
 
 }

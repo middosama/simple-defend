@@ -6,7 +6,7 @@ using UnityEngine;
 public static class Language
 {
     public static Dictionary<AllyName, string> AllyDescription;
-    public static Dictionary<AllyName, string> AllyName;
+    public static Dictionary<AllyName, string> AllyNames;
     public static Dictionary<AllyAbilityName, string> AllyAbilitiesName;
     public static Dictionary<AllyAbilityName, string> AllyAbilitiesDescription;
     public static string[][] LevelDescription;
@@ -18,6 +18,14 @@ public static class Language
         Other = new Dictionary<string, string>();
         // hardcode, English
         Other["needToSolveBeforeNextZone"] = "You need to pass this level before nexxt zone";
+        Other["chooseUnit"] = "Choose unit";
+        AllyNames = new Dictionary<AllyName, string>();
+        AllyNames.Add(AllyName.Simple, "Simple");
+    }
+
+    public static string GetDisplayName(this AllyName allyName)
+    {
+        return AllyNames[allyName];
     }
 
 }

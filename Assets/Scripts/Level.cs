@@ -26,10 +26,8 @@ public class Level : MonoBehaviour
     private InstantBullet instantBulletPrefab;
     [SerializeField]
     private DamageBubble instantBubblePrefab;
-    [SerializeField]
-    public OptionItem optionItemPrefab;
-    [SerializeField]
-    public OptionMenu optionMenuPrefab;
+    //[SerializeField]
+    //public OptionItem optionItemPrefab;
 
 
 

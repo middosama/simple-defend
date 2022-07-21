@@ -78,7 +78,7 @@ SpriteRenderer:
   m_Color: {r: 0.8773585, g: 0.40970984, b: 0.40970984, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
+  m_DrawMode: 1
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
@@ -97,10 +97,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4111bb66cde8b884297d28f5283d3aaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  appliedAbility: []
+  appliedAbility: 
   attackSpeedMultiply: 2
   attackRange: {fileID: 214558374764718521}
   rangeVisualized: {fileID: 3015671088171384466}
+  rangeSensor: {fileID: 214558374764718522}
   bulletFrame: 0.3
 --- !u!61 &-4927254499142450468
 BoxCollider2D:
@@ -122,7 +123,7 @@ BoxCollider2D:
     oldSize: {x: 1, y: 1}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
-    drawMode: 0
+    drawMode: 1
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
@@ -196,7 +197,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 214558374764718520}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -226,8 +227,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1981584601
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: d898ba0a090fa1b43b305879a5c032f1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

@@ -8,40 +8,27 @@ using TMPro;
 
 public class OptionMenu : MonoBehaviour
 {
+    public static OptionMenu Instance;
 
     [SerializeField]
-    ComfortPopupPosition popupPanel;
+    RectTransform selfTransform;
 
-    [SerializeField]
-    AbilitiesBoard abilitiesBoard;
-    [SerializeField]
-    Button btnApplyAbility;
-    [SerializeField]
-    TMP_Text txtAbilityPrice, txtSellPrice;
+    public AbilitiesBoard abilitiesBoard;
+    public Button btnApplyAbility, btnBuyUnit;
+    public TMP_Text txtAbilityPrice, txtSellPrice, txtReviewingUnitName, txtSelectingUnitName;
 
-    [SerializeField]
-    UnitsBoard unitsBoard;
-    [SerializeField]
-    GameObject abilityPanel, unitPanel;
+    public UnitsBoard unitsBoard;
+    public GameObject abilityPanel, unitPanel;
 
+    float lastCameraSize = 0;
 
     AbilityNode activingNode;
     bool isInited = false;
 
     static UnitPlaceholder currentTarget;
-    static OptionMenu focusingMenu;
 
-    static Vector2? _abilitiesBoardSize;
-    static Vector2? _unitsBoardSize;
-    static Vector2 rectSize
-    {
-        get
-        {
-            if (currentTarget.IsAssigned)
-                return _abilitiesBoardSize ?? new Vector2(Screen.safeArea.height / 1.7f, Screen.safeArea.height / 1.3f);
-            return _unitsBoardSize ?? new Vector2(Screen.safeArea.height / 2, Screen.safeArea.height / 1.5f);
-        }
-    }
+
+
 
     const float animDuration = 0.3f;
 
@@ -54,49 +41,41 @@ public class OptionMenu : MonoBehaviour
     //    get => _sellOption ??= SellOption.CreateInstance<SellOption>();
     //}
 
+    private void Awake()
+    {
+        Instance = this;
+        gameObject.SetActive(false);
+        unitsBoard.onUnitLoad = OnSelectUnit;
+    }
+
     public static void Show(UnitPlaceholder u)
     {
         if (currentTarget == u)
         {
             return;
         }
-        if (focusingMenu != null)
-        {
-            focusingMenu.OnBlur();
-        }
+        currentTarget?.OnBlur();
         currentTarget = u;
-        OptionMenu x = Instantiate(Level.Instance.optionMenuPrefab, Main.CurrentGUI);
-        focusingMenu = x;
+        Instance.Init();
 
-        x.Init();
-        //todo
     }
 
-    private void LateUpdate()
-    {
-
-        if (isInited && Input.GetMouseButtonDown(0) && !IsPointerOver() && currentTarget.eventTarget.phase == TouchPhase.Ended)
-        {
-            OnBlur();
-        }
-    }
-
-    bool IsPointerOver()
-    {
-        return RectTransformUtility.RectangleContainsScreenPoint(popupPanel.selfRect, Input.mousePosition, Camera.main);
-        //return EventS ystem.current.IsPointerOverGameObject();
-    }
 
 
     void Init()
     {
-        // set position 
-        var position = Camera.main.WorldToScreenPoint(currentTarget.transform.position, Camera.MonoOrStereoscopicEye.Mono);
-        popupPanel.selfRect.anchoredPosition = position;
-        popupPanel.selfRect.sizeDelta = rectSize;
-        popupPanel.FormatPosition();
-        popupPanel.selfRect.localScale = Vector3.zero;
-        popupPanel.selfRect.DOScale(Vector2.one, animDuration).SetUpdate(true);
+        if (!gameObject.activeSelf)
+        {
+            lastCameraSize = ZoomableCam.Instance.currentSize;
+            selfTransform.pivot = Vector2.one;
+            gameObject.SetActive(true);
+            selfTransform.DOPivotX(0, animDuration).SetUpdate(true);
+        }
+        else
+        {
+            //StopReviewUnit();
+        }
+        ZoomableCam.Instance.Focus(currentTarget.transform.position, -0.3333f, 3);
 
 
         abilityPanel.SetActive(currentTarget.IsAssigned);
@@ -104,19 +83,21 @@ public class OptionMenu : MonoBehaviour
 
         if (currentTarget.IsAssigned)
         {
+            txtSelectingUnitName.text = currentTarget.ally.AllyName.GetDisplayName();
             abilitiesBoard.onNodeFocus = OnAbilityFocus;
             abilitiesBoard.LoadAlly(currentTarget.ally);
             txtSellPrice.text = "$ +" + currentTarget.SellPrice.ToString();
+            currentTarget.OnFocus();
         }
         else
         {
-            unitsBoard.onUnitLoad = OnSelectUnit;
-
+            ClearUnitSelectState();
+            txtReviewingUnitName.text = Language.Other["chooseUnit"];
         }
 
         isInited = true;
         Level.Instance.OnCoinChange.AddListener(ReCheckPrice);
-
+        
     }
 
     void OnAbilityFocus(AbilityNode abilityNode)
@@ -151,8 +132,24 @@ public class OptionMenu : MonoBehaviour
 
     void OnSelectUnit(AllyDescription allyDescription)
     {
-        currentTarget.BuyAlly(allyDescription);
+        txtReviewingUnitName.text = allyDescription.allyName.GetDisplayName();
+        currentTarget.StopReview();
+        btnBuyUnit.gameObject.SetActive(true);
+        currentTarget.Review(allyDescription.allyTemplate);
     }
+
+    public void OnBuyUnit()
+    {
+        currentTarget.BuyAlly(unitsBoard.selectingUnit);
+        Blur();
+    }
+
+    void ClearUnitSelectState()
+    {
+        btnBuyUnit.gameObject.SetActive(false);
+        unitsBoard.ClearState();
+    }
+
 
     public void OnApplyAbility()
     {
@@ -164,30 +161,28 @@ public class OptionMenu : MonoBehaviour
     public void SellUnit()
     {
         currentTarget.Sell();
-        OnBlur();
+        Blur();
+
     }
 
-    public void OnBlur()
+    public void Blur()
     {
         if (!isInited)
         {
             return;
         }
+        ClearUnitSelectState();
+
         Level.Instance.OnCoinChange.RemoveListener(ReCheckPrice);
-        if (currentTarget.IsAssigned)
-            currentTarget.ally.OnBlur();
+        currentTarget.OnBlur();
 
         isInited = false;
-        popupPanel.selfRect.DOScale(Vector2.zero, animDuration).OnComplete(() =>
+        selfTransform.DOPivotX(1, animDuration).OnComplete(() =>
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }).SetUpdate(true);
+        ZoomableCam.Instance.ClampedSmoothZoom(lastCameraSize);
         currentTarget = null;
-    }
-
-    public static void BlurAll()
-    {
-        focusingMenu?.OnBlur();
     }
 
 }

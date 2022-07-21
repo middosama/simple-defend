@@ -41,12 +41,17 @@ public abstract class Ally : MonoBehaviour
 
     public abstract void OnFocus();
     public abstract void OnBlur();
+
+    
+
 }
 
 public enum AllyName
 {
     Simple
 }
+
+
 
 
 

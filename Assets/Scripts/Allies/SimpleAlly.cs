@@ -21,6 +21,7 @@ public class SimpleAlly : Ally
     FocusRange attackRange;
     [SerializeField]
     SpriteRenderer rangeVisualized;
+    public CircleCollider2D rangeSensor;
     Creature focusingTarget;
 
     Coroutine attackCoroutine;
@@ -153,12 +154,20 @@ public class SimpleAlly : Ally
                 break;
             case AllyAbilityName.Burst2:
                 burstCharge = 2;
+                ChangeRange(5);
                 break;
         }
     }
 
+    void ChangeRange(float size)
+    {
+        rangeSensor.radius = size;
+        rangeVisualized.size = new Vector2(size * 2, size * 2);
+    }
+
     public override void OnFocus()
     {
+        
         rangeVisualized.enabled = true;
     }
 
