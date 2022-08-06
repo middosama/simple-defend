@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Collection
 {
@@ -8,10 +9,12 @@ namespace Collection
     {
         public TMP_Text price;
         public GameObject icoLock;
-
+        public GameObject imageSrc;
+        Sprite sprite;
         public override void Init(AllyDescription ally)
         {
             base.Init(ally);
+            sprite = ally.thumbnail;
             SetPrice();
             Level.Instance.OnCoinChange.AddListener(SetPrice);
         }
@@ -32,7 +35,7 @@ namespace Collection
                 }
                 else
                 {
-                    price.text = $"<color=#ff0000>{-ally.Price}</color>";
+                    price.text = $"<color=#ffc600>{-ally.Price}</color>";
                     icoLock.SetActive(true);
                 }
 
@@ -40,8 +43,12 @@ namespace Collection
             else
             {
                 icoLock.SetActive(false);
-                price.text = "<color=#005500>+</color>" + (-ally.Price);
+                price.text = "<color=#ffc600>+</color>" + (-ally.Price);
             }
+        }
+        public void OnPressedChangeBackground()
+        {
+            InfoController.Instance.ChangeBackground(sprite);
         }
     }
 }

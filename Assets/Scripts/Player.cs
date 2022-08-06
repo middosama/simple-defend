@@ -75,7 +75,7 @@ internal class Player
         [SerializeField]
         int _coin;
         [SerializeField]
-        int _checkpointTicket = 9;
+        int _checkpointTicket = 99999;
         [SerializeField]
         int _bypassTicket = 9;
         public int Coin

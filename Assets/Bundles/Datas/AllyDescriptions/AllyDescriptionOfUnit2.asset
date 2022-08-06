@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db7418120d2b33c45903769789d3fe85, type: 3}
+  m_Name: AllyDescriptionOfUnit2
+  m_EditorClassIdentifier: 
+  thumbnail: {fileID: 21300000, guid: d5d7083ac17d41c49a64b39134d30f83, type: 3}
+  price: 500
+  _allyTemplate: {fileID: 214558374295092376, guid: d996af6303efe6041a6c12dbe52236ac, type: 3}
+  allyName: 1
+  _firstAbility: {fileID: 11400000, guid: a14b142782c435245a0d06f079bb352d, type: 2}

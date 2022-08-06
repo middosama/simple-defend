@@ -11,8 +11,8 @@ namespace Collection
     public class AbilityNode : MonoBehaviour
     {
         [SerializeField]
-        //AbilityPath[] abilityPaths;
-        AbilityNode[] abilityPaths;
+        AbilityPath[] abilityPaths = new AbilityPath[0];
+        //AbilityNode[] abilityPaths;
         public AllyAbility allyAbility;
         public AllyAbilityName abilityName { get => allyAbility.allyAbilityName; }
         [SerializeField]
@@ -22,6 +22,8 @@ namespace Collection
         [SerializeField]
         Image icoLock;
         public Image border;
+        public Sprite focusSprite;
+        public Sprite originSprite;
         //public Sprite focusSprite, nextSprite, canbeSprite;
         public Color focusColor, nextColor, canbeColor;
         public float blinkAlpha = 0.3f;
@@ -44,7 +46,7 @@ namespace Collection
             foreach (var path in abilityPaths)
             {
                 //path.SetPathStatus(isActive);
-                path.SetNodeStatus(NodeStatus.Next);
+                path.SetPathStatus(NodeStatus.Next);
                 if (isCurrentNode)
                     path.SetUnlock(true);
             }
@@ -61,7 +63,7 @@ namespace Collection
             SetUnlock(false);
             SetNodeStatusStandalone(NodeStatus.Cannot);
             stack = 0;
-            txtStack.text = "0/"+allyAbility.maxStack;
+            txtStack.text = "0/" + allyAbility.maxStack;
         }
 
         public void SetNodeStatus(NodeStatus status)
@@ -73,7 +75,7 @@ namespace Collection
             foreach (var path in abilityPaths)
             {
                 //path.SetPathStatus(isActive);
-                path.SetNodeStatus(status);
+                path.SetPathStatus(status);
             }
         }
 
@@ -81,33 +83,36 @@ namespace Collection
         {
             // visualize
             currentStatus = status;
-            blinkFX.Kill();
-            border.gameObject.SetActive(true);
+            blinkFX.Kill(true);
             switch (status)
             {
                 case NodeStatus.Focusing:
-                    //border.sprite = focusSprite;
-                    border.color = focusColor;
+                    border.sprite = focusSprite;
+                    /*border.color = focusColor;*/
                     DoBlink();
                     //button.targetGraphic.color = Color.red;
                     break;
                 case NodeStatus.Next:
                     //button.targetGraphic.color = Color.blue;
                     //border.sprite = nextSprite;
-                    border.color = nextColor;
+                    /*border.color = nextColor;*/
                     DoBlink();
                     break;
                 case NodeStatus.Canbe:
                     //button.targetGraphic.color = Color.white;
                     //border.sprite = canbeSprite;
-                    border.color = canbeColor;
+                    /*border.color = canbeColor;*/
                     //DoBlink();
                     break;
                 case NodeStatus.Cannot:
-                    border.gameObject.SetActive(false);
-                    //button.targetGraphic.color = Color.black;
+                    /*border.gameObject.SetActive(false);*/
+                    border.sprite = originSprite;
+                    border.color = Color.white;
                     break;
-
+            }
+            foreach (var path in abilityPaths)
+            {
+                path.SetPathStatusStandalone(status);
             }
         }
 

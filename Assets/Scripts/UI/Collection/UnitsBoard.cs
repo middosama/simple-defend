@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class UnitsBoard : MonoBehaviour
 {
@@ -40,5 +41,7 @@ public class UnitsBoard : MonoBehaviour
         selectingUnitItem.SetStatus(true);
         onUnitLoad?.Invoke(unitItem.ally);
     }
+
+    
 
 }

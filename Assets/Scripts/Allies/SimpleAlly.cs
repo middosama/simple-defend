@@ -12,7 +12,6 @@ public class SimpleAlly : Ally
     //private float aps;
     [SerializeField]
     private float attackSpeedMultiply = 1f;
-
     int burstCharge = int.MaxValue;
     int burstChargeCount = 0;
     int burstCount = 3;
@@ -28,8 +27,10 @@ public class SimpleAlly : Ally
 
     public float bulletFrame;
 
-    
 
+    public Animator animator;
+    public float animateTime;
+    public float wantedAnimateTime;
     public override float SellValue => 0.8f; // 80% refund
 
     public override AllyName AllyName => AllyName.Simple;
@@ -50,11 +51,17 @@ public class SimpleAlly : Ally
                 yield return null;
             }
             // snap
+            wantedAnimateTime = (snapTime / attackSpeedMultiply);
+            animateTime = AnimationLength("SimpleAlly_Aiming");
+            animator.SetTrigger("AimTrigger");
+            animator.speed = (animateTime / wantedAnimateTime);
+
             doneSnapTime = Time.time + (snapTime / attackSpeedMultiply);
             while (doneSnapTime > Time.time)
             {
                 yield return null;
             }
+
             doneReloadTime = Time.time + (reloadTime / attackSpeedMultiply);
 
             if (burstChargeCount > burstCharge)
@@ -63,6 +70,9 @@ public class SimpleAlly : Ally
                 for (int i = 0; i < burstCount; i++)
                 {
                     Shoot();
+                    animateTime = AnimationLength("SimpleAlly_Shooted");
+                    animator.SetTrigger("ShootTrigger");
+                    animator.speed = (animateTime / 0.1f);
                     yield return new WaitForSeconds(0.1f);
                 }
             }
@@ -71,7 +81,7 @@ public class SimpleAlly : Ally
                 Shoot();
                 burstChargeCount++;
             }
-            
+
             //yield return reloadBlocker;
         }
     }
@@ -114,7 +124,7 @@ public class SimpleAlly : Ally
     void NextEnemy()
     {
         var node = attackRange.TargetList.First;
-        while(node != null && node.Value.IsDead )
+        while (node != null && node.Value.IsDead)
         {
             attackRange.TargetList.RemoveFirst();
             node = attackRange.TargetList.First;
@@ -141,9 +151,9 @@ public class SimpleAlly : Ally
         // anim
         attackRange.Init(IsEnemy, StartAttack, OnEnemyEscape);
     }
-     
 
-    
+
+
 
     public override void OnApplyAbility(AllyAbilityName ability)
     {
@@ -167,12 +177,24 @@ public class SimpleAlly : Ally
 
     public override void OnFocus()
     {
-        
+
         rangeVisualized.enabled = true;
     }
 
     public override void OnBlur()
     {
         rangeVisualized.enabled = false;
+    }
+
+    public float AnimationLength(string name)
+    {
+        float time = 0;
+        RuntimeAnimatorController ac = animator.runtimeAnimatorController;
+
+        for (int i = 0; i < ac.animationClips.Length; i++)
+            if (ac.animationClips[i].name == name)
+                time = ac.animationClips[i].length;
+
+        return time;
     }
 }

@@ -15,7 +15,7 @@ public class OptionMenu : MonoBehaviour
 
     public AbilitiesBoard abilitiesBoard;
     public Button btnApplyAbility, btnBuyUnit;
-    public TMP_Text txtAbilityPrice, txtSellPrice, txtReviewingUnitName, txtSelectingUnitName;
+    public TMP_Text txtAbilityPrice, txtSellPrice, txtReviewingUnitName, txtReviewingUnitDescription, txtSelectingUnitName;
 
     public UnitsBoard unitsBoard;
     public GameObject abilityPanel, unitPanel;
@@ -93,11 +93,12 @@ public class OptionMenu : MonoBehaviour
         {
             ClearUnitSelectState();
             txtReviewingUnitName.text = Language.Other["chooseUnit"];
+            txtReviewingUnitDescription.text = Language.Other["chooseUnitDesc"];
         }
 
         isInited = true;
         Level.Instance.OnCoinChange.AddListener(ReCheckPrice);
-        
+
     }
 
     void OnAbilityFocus(AbilityNode abilityNode)
@@ -132,7 +133,8 @@ public class OptionMenu : MonoBehaviour
 
     void OnSelectUnit(AllyDescription allyDescription)
     {
-        txtReviewingUnitName.text = allyDescription.allyName.GetDisplayName();
+        txtReviewingUnitName.text = allyDescription.displayName;
+        txtReviewingUnitDescription.text = allyDescription.description;
         currentTarget.StopReview();
         btnBuyUnit.gameObject.SetActive(true);
         currentTarget.Review(allyDescription.allyTemplate);

@@ -48,7 +48,9 @@ public abstract class Ally : MonoBehaviour
 
 public enum AllyName
 {
-    Simple
+    Simple,
+    Complex,
+    TestObject
 }
 
 
