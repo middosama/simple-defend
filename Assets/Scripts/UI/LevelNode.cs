@@ -8,6 +8,9 @@ public class LevelNode : MonoBehaviour
 {
     [SerializeField]
     Level level;
+    public int subNodeNumber = 3;
+
+    public RectTransform selfRectTransform;
     //LinkedListNode<LevelNode> currentNode;
     int levelIndex;
 
@@ -19,6 +22,9 @@ public class LevelNode : MonoBehaviour
     List<int> waitingBypassingLevel;
     bool isUnlocked;
     bool isNew = false;
+
+    public bool IsUnlocked { get => isUnlocked; }
+
     public void Init(int levelIndex, int star, bool unlocked, int bypass = 0)
     {
         this.levelIndex = levelIndex;

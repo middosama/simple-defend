@@ -72,11 +72,13 @@
     <Compile Include="Assets\Scripts\UI\Collection\UnitItem.cs" />
     <Compile Include="Assets\Scripts\UI\ScrollerItems\CheckpointItem.cs" />
     <Compile Include="Assets\Scripts\Enemy.cs" />
+    <Compile Include="Assets\Scripts\UI\SubNodethingy.cs" />
     <Compile Include="Assets\Scripts\UI\LevelGUI.cs" />
     <Compile Include="Assets\Libs\EnhancedScroller v2\Plugins\EnhancedScroller.cs" />
     <Compile Include="Assets\Scripts\SystemCommon.cs" />
     <Compile Include="Assets\Scripts\ObjectPool.cs" />
     <Compile Include="Assets\Scripts\UI\Collection\UnitsBoard.cs" />
+    <Compile Include="Assets\Scripts\Allies\ComplexAlly.cs" />
     <Compile Include="Assets\Scripts\UI\ScrollerItems\AllyWithNumberCountItem.cs" />
     <Compile Include="Assets\Scripts\DTOs\LevelUserData.cs" />
     <Compile Include="Assets\Scripts\UI\DraggableRect.cs" />
@@ -85,6 +87,7 @@
     <Compile Include="Assets\Scripts\UI\Collection\InfoController.cs" />
     <Compile Include="Assets\Libs\PathCreator\Examples\Scripts\PathPlacer.cs" />
     <Compile Include="Assets\Scripts\UnityCommon.cs" />
+    <Compile Include="Assets\Scripts\HomeController.cs" />
     <Compile Include="Assets\Scripts\UI\Collection\AbilityNode.cs" />
     <Compile Include="Assets\Scripts\Behaviours\Abilities\AllyAbility.cs" />
     <Compile Include="Assets\Libs\EnhancedScroller v2\Plugins\EnhancedScrollerCellView.cs" />
@@ -93,6 +96,7 @@
     <Compile Include="Assets\Scripts\Allies\SimpleAlly.cs" />
     <Compile Include="Assets\Scripts\UI\GraphicLib\UILineRenderer.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerInfoDisplayController.cs" />
+    <Compile Include="Assets\Scripts\UI\PauseMenuBehaviour.cs" />
     <Compile Include="Assets\Scripts\DataManager.cs" />
     <Compile Include="Assets\Scripts\Main.cs" />
     <Compile Include="Assets\Scripts\UI\Layouts\ResponsiveGridLayout.cs" />
@@ -117,10 +121,12 @@
     <Compile Include="Assets\Scripts\Animation\AimingAnimation.cs" />
     <Compile Include="Assets\Libs\PathCreator\Examples\Scripts\PathFollower.cs" />
     <Compile Include="Assets\Scripts\Systems\ZoomableCam.cs" />
+    <Compile Include="Assets\Scripts\Allies\TestObjectAlly.cs" />
     <Compile Include="Assets\Scripts\UI\Collection\AbilitiesBoard.cs" />
     <Compile Include="Assets\Scripts\UI\Collection\CollectionSceneController.cs" />
     <Compile Include="Assets\Scripts\Enemies\SimpleEnemy.cs" />
     <Compile Include="Assets\Scripts\WorldClickEvent.cs" />
+    <Compile Include="Assets\image.cs" />
     <Compile Include="Assets\Scripts\Level.cs" />
     <Compile Include="Assets\Scripts\DraggableMap.cs" />
     <Compile Include="Assets\Scripts\Creature.cs" />

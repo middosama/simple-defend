@@ -68,7 +68,7 @@ public class Main : MonoBehaviour
 
         beginAnimDoneAction = () =>
         {
-            LoadScene("LevelSelectScene");
+            LoadScene("Home");
         };
     }
 
@@ -91,7 +91,7 @@ public class Main : MonoBehaviour
     public static void EndLoading()
     {
         loadingSequence.PlayForward();
-        Instance.UICanvas.worldCamera = Camera.main;
+        //Instance.UICanvas.worldCamera = Camera.main;
     }
 
 

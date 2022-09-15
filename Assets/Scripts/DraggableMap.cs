@@ -53,7 +53,7 @@ public class DraggableMap : MonoBehaviour, IBeginDragHandler, IDragHandler
         {
             if (!LevelGUI.Instance.canvas.IsRaycastBlocking(Input.mousePosition, camera.camera))
             {
-                camera.ClampedSmoothZoom(camera.currentSize - Input.mouseScrollDelta.y / 1.2f);
+                camera.ClampedSmoothZoom(camera.CurrentSize - Input.mouseScrollDelta.y / 1.2f);
             }
             
         }
@@ -64,12 +64,12 @@ public class DraggableMap : MonoBehaviour, IBeginDragHandler, IDragHandler
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        nextPos = camera.position;
-        Debug.Log("ASdASd");
+        nextPos = camera.transform.position;
     }
 
     public void OnDrag(PointerEventData eventData)
     {
+        //Debug.Log(camera.position);
         doubleCamSize = camera.camera.orthographicSize * 2;
         nextPos = new Vector2(nextPos.x - eventData.delta.x * screenWidthDpi * doubleCamSize, nextPos.y - (eventData.delta.y / screenHeightDpi) * doubleCamSize);
         camera.MoveTo(nextPos, dragSmoothness);

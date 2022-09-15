@@ -50,8 +50,8 @@ public class SimpleAlly : Ally
             {
                 yield return null;
             }
-            // snap
-            wantedAnimateTime = (snapTime / attackSpeedMultiply);
+            // starting aiming
+            wantedAnimateTime = (snapTime / attackSpeedMultiply) - 0.05f;
             animateTime = AnimationLength("SimpleAlly_Aiming");
             animator.SetTrigger("AimTrigger");
             animator.speed = (animateTime / wantedAnimateTime);
@@ -70,9 +70,9 @@ public class SimpleAlly : Ally
                 for (int i = 0; i < burstCount; i++)
                 {
                     Shoot();
-                    animateTime = AnimationLength("SimpleAlly_Shooted");
-                    animator.SetTrigger("ShootTrigger");
-                    animator.speed = (animateTime / 0.1f);
+                    animateTime = AnimationLength("SimpleAlly_Aiming");
+                    animator.SetTrigger("AimTrigger");
+                    animator.speed = (animateTime / (0.1f - 0.05f));
                     yield return new WaitForSeconds(0.1f);
                 }
             }
@@ -92,6 +92,7 @@ public class SimpleAlly : Ally
         //Instantiate(InstantBullet.Prefab).Hit2(this, focusingTarget, bulletFrame, 1);
 
         //Debug.Log("fuck");
+        animator.SetTrigger("ShootTrigger");
         InstantBullet.Spawn().Hit(transform.position, focusingTarget, bulletFrame, 10);
         // shoot
 
@@ -113,10 +114,12 @@ public class SimpleAlly : Ally
             StopAttack();
             NextEnemy();
         }
+        //focusingTarget.PredictedPos 
     }
 
     void StopAttack()
     {
+        /*animator.SetTrigger("ShootTrigger"); // end of aim animation */
         focusingTarget = null;
         StopCoroutine(attackCoroutine);
     }

@@ -73,7 +73,7 @@ public class Level : MonoBehaviour
         }
     }
     [SerializeField]
-    readonly int totalHealth = 100;
+    readonly int totalHealth = 33;
     int _currentHealth;
     int currentHealth
     {

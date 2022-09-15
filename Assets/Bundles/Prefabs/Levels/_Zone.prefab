@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8516715071229017760}
   - component: {fileID: 8516715071229017762}
   m_Layer: 0
-  m_Name: Zone
+  m_Name: _Zone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -39,7 +39,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1336.96, y: 0}
+  m_SizeDelta: {x: 2500, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &8516715071229017763
 CanvasRenderer:
@@ -100,6 +100,9 @@ MonoBehaviour:
   - {fileID: 7443534207838541132}
   - {fileID: 1781667627698927382}
   zoneName: abc
+  SubNodeTemplate: {fileID: -1838864479179159705, guid: 057dafc584516114c9f8b7a3eec87bdb, type: 3}
+  SubNodeContainer: {fileID: 8516715071229017761}
+  wantedDistance: 120
 --- !u!1001 &2655417705791620955
 PrefabInstance:
   m_ObjectHideFlags: 0

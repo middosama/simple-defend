@@ -66,7 +66,7 @@ public class OptionMenu : MonoBehaviour
     {
         if (!gameObject.activeSelf)
         {
-            lastCameraSize = ZoomableCam.Instance.currentSize;
+            lastCameraSize = ZoomableCam.Instance.CurrentSize;
             selfTransform.pivot = Vector2.one;
             gameObject.SetActive(true);
             selfTransform.DOPivotX(0, animDuration).SetUpdate(true);
@@ -75,7 +75,7 @@ public class OptionMenu : MonoBehaviour
         {
             //StopReviewUnit();
         }
-        ZoomableCam.Instance.Focus(currentTarget.transform.position, -0.3333f, 3);
+        ZoomableCam.Instance.Focus(currentTarget.transform.position, -0.3333f, 1);
 
 
         abilityPanel.SetActive(currentTarget.IsAssigned);

@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using DG.Tweening;
+using UnityEngine.UI;
 
 public class Zone : DraggableRect
 {
@@ -17,19 +18,27 @@ public class Zone : DraggableRect
 
     static int markAsCleared = -1;
 
+
+    [SerializeField]
+    SubNodethingy SubNodeTemplate;
+    [SerializeField]
+    Transform SubNodeContainer;
+    public float wantedDistance = 120f;
     public int GetNodeLength()
     {
-        return levelNodes.Length ;
+        return levelNodes.Length;
     }
 
     public int GetBypassJump(int levelIndex)
     {
-        int nextJump = data.levelDatas[levelIndex].bypass + levelIndex+1;
-        return nextJump >= levelNodes.Length ? data.levelDatas[levelIndex].bypass == 0? -1: 0: nextJump; // -1 is next zone, 0 is done
+        int nextJump = data.levelDatas[levelIndex].bypass + levelIndex + 1;
+        return nextJump >= levelNodes.Length ? data.levelDatas[levelIndex].bypass == 0 ? -1 : 0 : nextJump; // -1 is next zone, 0 is done
     }
 
     public void Init()
     {
+
+
         if (zoneName != loadedZoneName)
             data = null;
         if (data == null)
@@ -57,7 +66,7 @@ public class Zone : DraggableRect
         {
             LevelData currentLevel = data.levelDatas[i];
             bool unlocked;
-            if(prevLevel == null)// first or passed prev level
+            if (prevLevel == null)// first or passed prev level
             {
                 unlocked = unlockFisrt;
             }
@@ -65,8 +74,10 @@ public class Zone : DraggableRect
             {
                 unlocked = prevLevel.star > 0 || prevLevel.bypass > 0;
             }
+
+
             levelNodes[i].Init(i, currentLevel.star, unlocked, currentLevel.bypass);
-            if (!unlocked && i>0)
+            if (!unlocked && i > 0)
             {
                 levelNodes[i].LockByBypass(i - 1);
             }
@@ -85,9 +96,42 @@ public class Zone : DraggableRect
             }
             prevLevel = currentLevel;
         }
+
+        for (int i = 0; i < levelNodes.Length - 1; i++)
+        {
+            //x.anchoredPosition = new Vector2()
+            var pointA = levelNodes[i].selfRectTransform.anchoredPosition;
+            var pointB = levelNodes[i + 1].selfRectTransform.anchoredPosition;
+            //if (levelNodes[i].IsUnlocked )
+            
+            if (levelNodes[i].IsUnlocked && levelNodes[i + 1].IsUnlocked)
+            {
+                VisualizeSubNode(pointA, pointB, true);
+            }
+            else
+            {
+                VisualizeSubNode(pointA, pointB, false);
+            }
+        }
     }
 
-
+    public void VisualizeSubNode(Vector2 a, Vector2 b, bool status)
+    {
+        int subNodeNum;
+        double distance = (a - b).magnitude;
+        //Debug.Log(Math.Round(distance / wantedDistance));
+        subNodeNum = (int)Math.Round(distance / wantedDistance);
+        for (int j = 1; j <= subNodeNum; j++)
+        {
+            var tempNode = new Vector2();
+            tempNode = b * j + a * (subNodeNum + 1 - j);
+            tempNode /= (subNodeNum + 1);
+            //tempNode.x = (b.x * j + a.x * ) / ;
+            //tempNode.y = (b.y * j + a.y * (subNodeNum + 1 - j)) / ;
+            var clone = Instantiate(SubNodeTemplate, SubNodeContainer);
+            clone.Init(tempNode, status);
+        }
+    }
 
     void Sync()
     {
@@ -164,17 +208,18 @@ public class Zone : DraggableRect
         DataManager.Save(loadedZoneName, DataManager.ZONE_OVERVIEW_PATH, data);
     }
 
-    public void DoInTransition(bool isNext)
+    public void DoInTransition(bool isNext, TweenCallback onTransitionDone)
     {
         if (isNext)
         {
             rectTransform.anchoredPosition = new Vector2(LevelSelectController.Instance.rectTransform.sizeDelta.x, 0);
-            rectTransform.DOAnchorPosX(0, duration);
+            rectTransform.DOAnchorPosX(0, duration).OnComplete(onTransitionDone);
         }
         else
         {
             rectTransform.anchoredPosition = new Vector2(-rectTransform.sizeDelta.x, 0);
-            rectTransform.DOAnchorPosX(LevelSelectController.Instance.rectTransform.sizeDelta.x - rectTransform.sizeDelta.x, duration);
+            rectTransform.DOAnchorPosX(LevelSelectController.Instance.rectTransform.sizeDelta.x - rectTransform.sizeDelta.x, duration).OnComplete(onTransitionDone);
+                
         }
     }
     public void DoOutTransition(bool isNext)
@@ -218,7 +263,7 @@ public class Zone : DraggableRect
             this.star = start;
             this.bypass = bypass;
         }
-        public LevelData() :this(0,0)
+        public LevelData() : this(0, 0)
         {
         }
     }

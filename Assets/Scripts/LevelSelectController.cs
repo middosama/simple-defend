@@ -20,7 +20,8 @@ public class LevelSelectController : MonoBehaviour
     Image levelPreview;
     [SerializeField]
     Button startButton, btnBypass;
-
+    [SerializeField]
+    Button[] disabledWhileTransitBtn;
     public RectTransform rectTransform, zoneContainer, loadingCloud;
     public PopupEffect levelSelectPopup;
     public LevelRecordList levelRecordList;
@@ -35,6 +36,12 @@ public class LevelSelectController : MonoBehaviour
     const string LAST_LEVEL_INDEX_KEY = "LAST_LEVEL_INDEX";
 
     const float duration = 0.5f;
+    public static Vector2 CanvasSize {
+        get
+        {
+            return Instance.rectTransform.sizeDelta;
+        }
+    }
 
     private void Start()
     {
@@ -64,12 +71,16 @@ public class LevelSelectController : MonoBehaviour
         }
     }
 
+    public void ReturnHome()
+    {
+        Main.LoadScene("Home");
+    }
     void LoadZone(int nextZone)
     {
         DoZoneTrasition(nextZone > zoneIndex, () =>
          {
              zoneIndex = nextZone;
-             Destroy(currentZone);
+             Destroy(currentZone.gameObject); // ???
              currentZone = Instantiate(zones[zoneIndex], zoneContainer);
              currentZone.Init();
          });
@@ -79,15 +90,27 @@ public class LevelSelectController : MonoBehaviour
     void DoZoneTrasition(bool isNext, Action action)
     {
         int direction = isNext ? 1 : -1;
-        Debug.Log(direction);
+        /*Debug.Log(direction);*/
         currentZone.DoOutTransition(isNext);
         loadingCloud.anchoredPosition = new Vector2(rectTransform.sizeDelta.x * direction, 0);
+
+        foreach (var i in disabledWhileTransitBtn)
+        {
+            i.interactable = false;
+        } // btn disable / co can lam ra script rieng k
         loadingCloud.DOAnchorPosX(0, duration * 0.75f).OnComplete(() =>
         {
             action();
             loadingCloud.DOAnchorPosX(rectTransform.sizeDelta.x * -direction, duration * 1.5f);
-            Debug.Log(rectTransform.sizeDelta.x * -direction);
-            currentZone.DoInTransition(isNext);
+            /*Debug.Log(rectTransform.sizeDelta.x * -direction);*/
+            currentZone.DoInTransition(isNext, () =>
+            {
+                foreach (var i in disabledWhileTransitBtn)
+                {
+                    i.interactable = true;
+                }
+            });
+
 
         });
     }
@@ -159,7 +182,7 @@ public class LevelSelectController : MonoBehaviour
             }
             else
             {
-                listBypassing += GetLevelName(waitBypassList[i])+ ", ";
+                listBypassing += GetLevelName(waitBypassList[i]) + ", ";
             }
         }
         //}

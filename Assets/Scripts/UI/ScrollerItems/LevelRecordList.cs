@@ -10,6 +10,8 @@ public class LevelRecordList : MonoBehaviour, IEnhancedScrollerDelegate
     LevelRecordItem levelRecordItemTemplate;
     [SerializeField]
     float cellSize = 40;
+    public float cellSpacing = 10f;
+    public int cellPadding = 40;
     [SerializeField]
     EnhancedScroller scroller;
     public EnhancedScrollerCellView GetCellView(EnhancedScroller scroller, int dataIndex, int cellIndex)
@@ -38,6 +40,10 @@ public class LevelRecordList : MonoBehaviour, IEnhancedScrollerDelegate
         //    records = new List<LevelRecord>();
         //}
 
+        scroller.spacing = cellSpacing;
+        scroller.padding.top = cellPadding;
+        scroller.padding.left = cellPadding;
+        scroller.padding.right = cellPadding;
         scroller.ReloadData();
     }
 

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Collection
 {
@@ -10,10 +12,12 @@ namespace Collection
         public static CollectionSceneController Instance;
         public TMP_Text txtAllyName;
         public UnitsBoard unitBoard;
+        public Button backBtn;
         // Use this for initialization
         void Start()
         {
             Instance = this;
+            //unitBoard.
             unitBoard.onUnitLoad = LoadAlly;
         }
         public void LoadAlly(AllyDescription allyDescription)
@@ -23,7 +27,10 @@ namespace Collection
             txtAllyName.text = "{lang.allyName}";
         }
 
-
+        public void ReturnToMenu()
+        {
+            SceneManager.LoadScene("Home");
+        }
 
     }
 }

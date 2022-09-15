@@ -10,11 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 214558374295092378}
   - component: {fileID: 214558374295092377}
-  - component: {fileID: 214558374295092376}
   - component: {fileID: -4927254499142450468}
   - component: {fileID: 2036831381617101070}
+  - component: {fileID: 5238387586937132556}
   m_Layer: 2
-  m_Name: Square
+  m_Name: TestObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -86,26 +86,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &214558374295092376
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 214558374295092383}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4111bb66cde8b884297d28f5283d3aaa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  appliedAbility: 
-  attackSpeedMultiply: 1.25
-  attackRange: {fileID: 214558374764718521}
-  rangeVisualized: {fileID: 3015671088171384466}
-  rangeSensor: {fileID: 214558374764718522}
-  bulletFrame: 0.3
-  animator: {fileID: 2036831381617101070}
-  animateTime: 0
 --- !u!61 &-4927254499142450468
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -151,6 +131,27 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &5238387586937132556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 214558374295092383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a243b171eda50f43813753f4d1ac88e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  appliedAbility: 
+  attackSpeedMultiply: 1
+  attackRange: {fileID: 214558374764718521}
+  rangeVisualized: {fileID: 3015671088171384466}
+  rangeSensor: {fileID: 214558374764718522}
+  bulletFrame: 0.5
+  animator: {fileID: 2036831381617101070}
+  animateTime: 0
+  wantedAnimateTime: 0
 --- !u!1 &214558374764718520
 GameObject:
   m_ObjectHideFlags: 0
