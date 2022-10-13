@@ -36,7 +36,8 @@ public class LevelSelectController : MonoBehaviour
     const string LAST_LEVEL_INDEX_KEY = "LAST_LEVEL_INDEX";
 
     const float duration = 0.5f;
-    public static Vector2 CanvasSize {
+    public static Vector2 CanvasSize
+    {
         get
         {
             return Instance.rectTransform.sizeDelta;
@@ -128,8 +129,10 @@ public class LevelSelectController : MonoBehaviour
         levelPreview.sprite = level.levelPreview;
         levelName.text = zoneIndex + "-" + levelIndex;
 
-
-        selectingLevelRecords = DataManager.Load<List<LevelRecord>>(level.name, DataManager.LEVEL_RECORDS_PATH);
+        // wut? oong viet rwa wamait  ong viet ra ma
+        selectingLevelRecords = DataManager.Load<List<LevelRecord>>(level.LevelName, DataManager.LEVEL_RECORDS_PATH);
+        Debug.Log(level.LevelName);
+        
         if (selectingLevelRecords == null)
             selectingLevelRecords = new List<LevelRecord>();
 
@@ -206,7 +209,7 @@ public class LevelSelectController : MonoBehaviour
         Zone.UpdateData(selectingLevelIndex, newRecord);
 
         selectingLevelRecords.Add(newRecord);
-        DataManager.Save(GamePlayController.SelectedLevel.name, DataManager.LEVEL_RECORDS_PATH, selectingLevelRecords);
+        DataManager.Save(GamePlayController.SelectedLevel.LevelName, DataManager.LEVEL_RECORDS_PATH, selectingLevelRecords);
         return diff;
     }
 

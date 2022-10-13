@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
+using System;
 
 public class UnitPlaceholder : MonoBehaviour
 {
@@ -133,11 +134,15 @@ public class UnitPlaceholder : MonoBehaviour
     }
 
 }
+
+[Serializable]
 public class UnitSnapshot
 {
-    public AllyName allyName { get; private set; }
+    public AllyName _allyName;
+    public AllyName allyName { get => _allyName; private set { _allyName = value; } }
     public List<AllyAbilityName> appliedAbility { get; private set; }
     public int investedValue;
+    public int allyIndex;
 
     public UnitSnapshot(Ally ally, int invest)
     {
@@ -145,4 +150,6 @@ public class UnitSnapshot
         allyName = ally.AllyName;
         appliedAbility = new List<AllyAbilityName>(ally.appliedAbility);
     }
+
+
 }

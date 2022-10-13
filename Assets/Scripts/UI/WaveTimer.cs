@@ -86,9 +86,12 @@ public class WaveTimer : MonoBehaviour
         }
     }
 
+    Tweener leftTimerTween;
+
     void DoBurnTimer(float leftTime)
     {
-        leftTimer.DOFillAmount(0, duration * (leftTime / maxTime)).OnComplete(Active);
+        leftTimerTween?.Kill();
+        leftTimerTween = leftTimer.DOFillAmount(0, duration * (leftTime / maxTime)).OnComplete(Active);
     }
 
     void Active()

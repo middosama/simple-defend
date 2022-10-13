@@ -10,7 +10,8 @@ public static class DataManager
     public const string ZONE_OVERVIEW_PATH = "Player/Zones/Overviews/";
     public const string LEVEL_RECORDS_PATH = "Player/Zones/LevelRecords/";
     public const string PLAYER_INFO_PATH = "Player/Info/";
-    public static void Save(string fileName,string location, object data)
+    public const string LEVEL_CHECKPOINT_PATH = "Player/Zones/Checkpoint/";
+    public static void Save(string fileName, string location, object data)
     {
         BinaryFormatter bf = new BinaryFormatter();
         string path = Application.persistentDataPath + "/" + location;
@@ -27,7 +28,7 @@ public static class DataManager
         finally
         {
 
-        file.Close();
+            file.Close();
 
         }
     }
@@ -37,7 +38,7 @@ public static class DataManager
         FileStream file = null;
         try
         {
-            string path = Application.persistentDataPath + "/"+location + fileName;
+            string path = Application.persistentDataPath + "/" + location + fileName;
             file = File.Open(path, FileMode.Open);
             BinaryFormatter bf = new BinaryFormatter();
             return (T)bf.Deserialize(file);

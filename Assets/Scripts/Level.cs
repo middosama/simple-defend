@@ -13,6 +13,14 @@ public class Level : MonoBehaviour
 {
     public Sprite levelPreview;
     [SerializeField]
+    string _levelName;
+    public string LevelName
+    {
+        get => _levelName;
+    }
+    [Obsolete]
+    public new string name;
+    [SerializeField]
     float bonusRatio;
 
     [SerializeField]
@@ -112,7 +120,11 @@ public class Level : MonoBehaviour
         {
             unitPlaceholders[i] = unitPlaceholdersContainer.GetChild(i).GetComponent<UnitPlaceholder>();
         }
-        checkpointList = new List<Checkpoint>();
+        checkpointList = DataManager.Load<List<Checkpoint>>(LevelName, DataManager.LEVEL_CHECKPOINT_PATH);
+        foreach (var iter in checkpointList)
+        {
+            iter.ConvertToCheckpoint();
+        }
         levelGUI.Init(checkpointList);
     }
 
@@ -250,7 +262,7 @@ public class Level : MonoBehaviour
     }
     public Checkpoint? CreateCheckpoint()
     {
-        if(Player.CreateCheckpoint())
+        if (Player.CreateCheckpoint())
             return SaveCheckpoint();
         return null;
     }
@@ -265,6 +277,7 @@ public class Level : MonoBehaviour
         }
         Checkpoint checkpoint = new Checkpoint(snapshotList, currentWaveIndex, currentCoin, currentHealth, ScreenCapture.CaptureScreenshotAsTexture());
         checkpointList.Add(checkpoint);
+        DataManager.Save(LevelName, DataManager.LEVEL_CHECKPOINT_PATH, checkpointList);
         return checkpoint;
     }
 
@@ -286,9 +299,20 @@ public class Level : MonoBehaviour
     public void RemoveCheckpoint(Checkpoint checkpoint)
     {
         checkpointList.Remove(checkpoint);
+        ///
+        DataManager.Save(LevelName, DataManager.LEVEL_CHECKPOINT_PATH, checkpointList);
     }
 
-
+    //public void LoadCheckpoint()
+    //{
+        
+    //    foreach (var iter in listCheckPoint)
+    //    {
+    //        iter.ConvertToCheckpoint();
+    //        levelGUI.in
+    //        Debug.Log(listCheckPoint);
+    //    }
+    //}
 
     public void RestartLevel()
     {
@@ -422,31 +446,82 @@ public class Level : MonoBehaviour
         public float delay;
     }
 
-    public struct Checkpoint
-    {
-        public UnitSnapshot[] snapshotList { get; private set; }
-        public int waveIndex { get; private set; }
-        public int coin { get; private set; }
-        public int hp { get; private set; }
-        public Sprite screenshot { get; private set; }
-        public Checkpoint(UnitSnapshot[] snapshotList, int waveIndex, int coin, int hp, Texture2D screenshot)
-        {
-            this.snapshotList = snapshotList;
-            this.waveIndex = waveIndex;
-            this.coin = coin;
-            this.hp = hp;
-            this.screenshot = Sprite.Create(screenshot, new Rect(0, 0, screenshot.width, screenshot.height), Vector2.zero);
-        }
-
-        public void DestroyTexture()
-        {
-            Destroy(screenshot.texture);
-        }
-    }
 
 
     public void BackToZone()
     {
         Main.LoadScene("LevelSelectScene");
+    }
+}
+[Serializable]
+public class Checkpoint
+{
+    // serializerbel
+
+    public int _waveIndex;
+    public TexturePack _texture;
+
+    public int _hp;
+    public int _coin;
+    [NonSerialized]
+    private Sprite _screenshot;
+    // unserializableField
+    public UnitSnapshot[] snapshotList { get; private set; }
+    public int waveIndex { get => _waveIndex;  }
+    public int coin { get => _coin; }
+    public int hp { get => _hp; }
+    public Sprite screenshot { get => _screenshot; }
+
+    public Checkpoint(UnitSnapshot[] snapshotList, int waveIndex, int coin, int hp, Texture2D texture)
+    {
+        this.snapshotList = snapshotList;
+        this._waveIndex = waveIndex;
+        this._coin = coin;
+        this._hp = hp;
+        _screenshot = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+        _texture = new TexturePack(texture);
+    }
+
+
+    public void ConvertToCheckpoint()
+    {
+        
+        _screenshot = Sprite.Create(_texture.Texture, new Rect(0, 0, _texture.width, _texture.height), Vector2.zero);
+    }
+
+    public void DestroyTexture()
+    {
+        GameObject.Destroy(screenshot.texture);
+    }
+
+    [Serializable]
+    public class TexturePack
+    {
+        public int width;
+        public int height;
+        public byte[] data;
+        [NonSerialized]
+        Texture2D _texture2D;
+
+        public TexturePack(Texture2D texture)
+        {
+            width = texture.width;
+            height = texture.height;
+            data = texture.EncodeToJPG();
+        }
+        
+        public Texture2D Texture
+        {
+            get
+            {
+                if (_texture2D == null)
+                {
+                    _texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
+                    _texture2D.LoadImage(data);
+
+                }
+                return _texture2D;
+            }
+        }
     }
 }

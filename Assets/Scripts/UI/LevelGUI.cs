@@ -52,7 +52,7 @@ public class LevelGUI : MonoBehaviour
 
     const int checkpointSlot = 6;
 
-    internal void Init(List<Checkpoint> checkpoints)
+    internal void Init(List<Checkpoint> checkpoints) // init = load checkpoints
     {
         checkpointList = checkpoints;
         Instance = this;
@@ -75,13 +75,17 @@ public class LevelGUI : MonoBehaviour
         {
             return;
         }
+        if (pressStatus) return;
         // check have ticket
         if (Player.CheckpointTicket > 0)
             StartCoroutine(IcreateCheckpoint());
     }
 
+    bool pressStatus = false;
+
     public IEnumerator IcreateCheckpoint()
     {
+        pressStatus = true;
         canvasGroup.alpha = 0.001f;
         flashCanvas.gameObject.SetActive(true);
         flashCanvas.alpha = 0;
@@ -94,12 +98,13 @@ public class LevelGUI : MonoBehaviour
         fadeAnim.OnComplete(() =>
             {
                 if(newCheckpoint!= null)
-                    InitCheckpoint(checkpointContainer, newCheckpoint.Value, true);
+                    InitCheckpoint(checkpointContainer, newCheckpoint, true);
                 RedrawCheckpointListInfo();
                 canvasGroup.alpha = 1;
-                fadeAnim.OnComplete(() =>
+                fadeAnim.OnRewind(() =>
                 {
                     flashCanvas.gameObject.SetActive(false);
+                    pressStatus = false;
                     fadeAnim.Kill();
                 });
                 fadeAnim.PlayBackwards();
@@ -190,7 +195,7 @@ public class LevelGUI : MonoBehaviour
         container.DoCount(0, 1, transitionDuration, container.SetGlobalScale, true, Ease.OutQuad);
     }
 
-    void InitCheckpoint(HorizontalChaosLayout container, Checkpoint checkpoint, bool isNew = false)
+    public void InitCheckpoint(HorizontalChaosLayout container, Checkpoint checkpoint, bool isNew = false)
     {
         Instantiate(checkpointItemTemplate, container.transform).Init(checkpoint, isNew);
     }

@@ -9,7 +9,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2178243965168947346, guid: e7e47a46ecb877841a4c88798b32cd52, type: 3}
       propertyPath: m_Name
-      value: _Level
+      value: Level 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2178243965168947347, guid: e7e47a46ecb877841a4c88798b32cd52, type: 3}
+      propertyPath: _levelName
+      value: Level_3
       objectReference: {fileID: 0}
     - target: {fileID: 2178243965168947348, guid: e7e47a46ecb877841a4c88798b32cd52, type: 3}
       propertyPath: m_RootOrder
